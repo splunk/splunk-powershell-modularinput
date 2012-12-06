@@ -1,0 +1,1 @@
+c:\users\jbennett\Projects\ModularPowerShell\ModularPowerShell\bin\Debug\ModularPowerShell.exe.config
