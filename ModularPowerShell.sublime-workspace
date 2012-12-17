@@ -1,0 +1,492 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"W",
+				"Write-Host"
+			],
+			[
+				"Prom",
+				"PromptBackground"
+			],
+			[
+				"For",
+				"Foreground"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/C/Program Files/Splunk/var/log/splunk/splunkd.log",
+			"settings":
+			{
+				"buffer_size": 32752,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Users/JBennett/Downloads/twitter_ta/PowerShellRunningProcesses/input.xml",
+			"settings":
+			{
+				"buffer_size": 624,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Users/JBennett/AppData/Roaming/Sublime Text 2/Packages/Default/Preferences.sublime-settings",
+			"settings":
+			{
+				"buffer_size": 13149,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/C/Users/JBennett/Downloads/twitter_ta/Splunk-TA-PowerShell/default/app.conf",
+			"settings":
+			{
+				"buffer_size": 403,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "[powershell]\nSHOULD_LINEMERGE = false\nREGEX=^([^=]+)\\w*=\\w*(.+)\\w*$\nFORMAT=$1::$2\n",
+			"file": "/C/Users/JBennett/Downloads/twitter_ta/Splunk-TA-PowerShell/default/props.conf",
+			"file_size": 39,
+			"file_write_time": 129997196764136812,
+			"settings":
+			{
+				"buffer_size": 82,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/C/Users/JBennett/Downloads/twitter_ta/Splunk-TA-PowerShell/README/inputs.conf.spec",
+			"settings":
+			{
+				"buffer_size": 226,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/C/Users/JBennett/Downloads/twitter_ta/twitter_ta/bin/twitter.py",
+			"settings":
+			{
+				"buffer_size": 9001,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/C/Users/JBennett/Downloads/twitter_ta/twitter_ta/README/inputs.conf.spec",
+			"settings":
+			{
+				"buffer_size": 207,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/C/Users/JBennett/Downloads/twitter_ta/PowerShellRunningProcesses/default/inputs.conf",
+			"settings":
+			{
+				"buffer_size": 570,
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/C/Users/JBennett/Downloads/twitter_ta/PowerShellRunningProcesses/input.xml",
+		"/C/Program Files/Splunk/etc/apps/PowerShellRunningProcesses/default/inputs.conf",
+		"/C/Users/JBennett/Downloads/twitter_ta/PowerShellRunningProcesses/default/default.conf",
+		"/C/Users/JBennett/Projects/modules/posh-git/GitPrompt.ps1",
+		"/C/Users/JBennett/Projects/modules/posh-git/posh-git.psm1",
+		"/C/Users/JBennett/Projects/modules/posh-git/profile.example.ps1",
+		"/C/Users/JBennett/Documents/WindowsPowershell/Scripts/Set-Prompt.ps1",
+		"/C/Users/JBennett/Documents/WindowsPowershell/Profile.ps1",
+		"/C/Users/JBennett/Documents/WindowsPowershell/Scripts/Add-VHDBoot.ps1",
+		"/C/Program Files/Splunk/etc/system/default/props.conf",
+		"/C/Program Files/Splunk/etc/system/default/app.conf",
+		"/C/Program Files/Splunk/etc/system/default/authorize.conf",
+		"/C/Users/JBennett/Downloads/twitter_ta/Splunk-TA-PowerShell/metadata/default.meta",
+		"/C/Users/JBennett/Downloads/twitter_ta/Splunk-TA-PowerShell/default/data/ui/manager/twitter.xml",
+		"/C/Users/JBennett/Downloads/twitter_ta/twitter_ta/default/app.conf",
+		"/C/Windows/System32/WindowsPowerShell/v1.0/Modules/Storage/DiskImage.cdxml",
+		"/C/Users/JBennett/Documents/WindowsPowershell/Scripts/ansi.ps1",
+		"/C/Users/JBennett/Documents/WindowsPowershell/Scripts/asciiout.ps1"
+	],
+	"find":
+	{
+		"height": 34.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"selec",
+			"powershell",
+			"perfmon",
+			"SpecFiles",
+			"ModularInputs",
+			"powershell",
+			"D:\\Users\\Public\\Documents\\Hyper-V\\Virtual Hard Disks",
+			"(\\w+)\\s+=.*",
+			"Host.UI.RawUI.BackgroundColor",
+			"DefaultForegroundColor"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"C:\\Images",
+			"$1 = \\$$1",
+			"DefaultBackgroundColor"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/C/Program Files/Splunk/var/log/splunk/splunkd.log",
+					"settings":
+					{
+						"buffer_size": 32752,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"word_wrap": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 2770.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/C/Users/JBennett/Downloads/twitter_ta/PowerShellRunningProcesses/input.xml",
+					"settings":
+					{
+						"buffer_size": 624,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								624,
+								624
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/XML/XML.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/C/Users/JBennett/AppData/Roaming/Sublime Text 2/Packages/Default/Preferences.sublime-settings",
+					"settings":
+					{
+						"buffer_size": 13149,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4578,
+								4583
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1544.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "/C/Users/JBennett/Downloads/twitter_ta/Splunk-TA-PowerShell/default/app.conf",
+					"settings":
+					{
+						"buffer_size": 403,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								353,
+								353
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Ini/INI.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/C/Users/JBennett/Downloads/twitter_ta/Splunk-TA-PowerShell/default/props.conf",
+					"settings":
+					{
+						"buffer_size": 82,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								81,
+								81
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Ini/INI.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "/C/Users/JBennett/Downloads/twitter_ta/Splunk-TA-PowerShell/README/inputs.conf.spec",
+					"settings":
+					{
+						"buffer_size": 226,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								225,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Ini/INI.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "/C/Users/JBennett/Downloads/twitter_ta/twitter_ta/bin/twitter.py",
+					"settings":
+					{
+						"buffer_size": 9001,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2475,
+								2273
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1427.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "/C/Users/JBennett/Downloads/twitter_ta/twitter_ta/README/inputs.conf.spec",
+					"settings":
+					{
+						"buffer_size": 207,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "/C/Users/JBennett/Downloads/twitter_ta/PowerShellRunningProcesses/default/inputs.conf",
+					"settings":
+					{
+						"buffer_size": 570,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								570,
+								570
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Ini/INI.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"replace":
+	{
+		"height": 62.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true
+}
