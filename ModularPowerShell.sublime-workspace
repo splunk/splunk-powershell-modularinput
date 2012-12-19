@@ -23,7 +23,7 @@
 			"file": "/C/Program Files/Splunk/var/log/splunk/splunkd.log",
 			"settings":
 			{
-				"buffer_size": 32752,
+				"buffer_size": 34449,
 				"line_ending": "Windows"
 			}
 		},
@@ -39,7 +39,7 @@
 			"file": "/C/Users/JBennett/AppData/Roaming/Sublime Text 2/Packages/Default/Preferences.sublime-settings",
 			"settings":
 			{
-				"buffer_size": 13149,
+				"buffer_size": 13677,
 				"line_ending": "Unix"
 			}
 		},
@@ -63,10 +63,13 @@
 			}
 		},
 		{
+			"contents": "[powershell://default]\n*The name must be unique (and should be a valid filename)\n\nscript = <command>\n*A powershell command-line script that will be executed\n\nschedule = <schedule>\nA cron schedule for executing the script. If blank, the script will only execute once.\n\n",
 			"file": "/C/Users/JBennett/Downloads/twitter_ta/Splunk-TA-PowerShell/README/inputs.conf.spec",
+			"file_size": 226,
+			"file_write_time": 129998065050244805,
 			"settings":
 			{
-				"buffer_size": 226,
+				"buffer_size": 268,
 				"line_ending": "Unix"
 			}
 		},
@@ -98,15 +101,31 @@
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 0.0,
+		"height": 288.0,
 		"selected_items":
 		[
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: in	",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Install Package"
+			]
 		],
-		"width": 0.0
+		"width": 528.0
 	},
 	"console":
 	{
-		"height": 0.0
+		"height": 941.0
 	},
 	"distraction_free":
 	{
@@ -119,6 +138,8 @@
 	},
 	"file_history":
 	[
+		"/C/Users/JBennett/AppData/Roaming/Sublime Text 2/Packages/Python/Python.sublime-build",
+		"/C/Users/JBennett/Downloads/AAAPackageDev.sublime-package",
 		"/C/Users/JBennett/Downloads/twitter_ta/PowerShellRunningProcesses/input.xml",
 		"/C/Program Files/Splunk/etc/apps/PowerShellRunningProcesses/default/inputs.conf",
 		"/C/Users/JBennett/Downloads/twitter_ta/PowerShellRunningProcesses/default/default.conf",
@@ -184,7 +205,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 6,
 			"sheets":
 			[
 				{
@@ -192,7 +213,7 @@
 					"file": "/C/Program Files/Splunk/var/log/splunk/splunkd.log",
 					"settings":
 					{
-						"buffer_size": 32752,
+						"buffer_size": 34449,
 						"regions":
 						{
 						},
@@ -247,15 +268,15 @@
 					"file": "/C/Users/JBennett/AppData/Roaming/Sublime Text 2/Packages/Default/Preferences.sublime-settings",
 					"settings":
 					{
-						"buffer_size": 13149,
+						"buffer_size": 13677,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4578,
-								4583
+								0,
+								0
 							]
 						],
 						"settings":
@@ -327,15 +348,15 @@
 					"file": "/C/Users/JBennett/Downloads/twitter_ta/Splunk-TA-PowerShell/README/inputs.conf.spec",
 					"settings":
 					{
-						"buffer_size": 226,
+						"buffer_size": 268,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								225,
-								0
+								81,
+								81
 							]
 						],
 						"settings":
@@ -360,8 +381,8 @@
 						"selection":
 						[
 							[
-								2475,
-								2273
+								4611,
+								4611
 							]
 						],
 						"settings":
@@ -371,7 +392,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1427.0,
+						"translation.y": 752.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"

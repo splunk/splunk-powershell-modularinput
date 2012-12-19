@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ModularPowerShell.Properties {
+namespace Splunk.ModularInputs.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

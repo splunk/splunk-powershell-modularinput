@@ -1,28 +1,59 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿// ***********************************************************************
+// Assembly         : ModularPowerShell
+// Author           : Joel Bennett
+// Created          : 12-07-2012
+//
+// Last Modified By : Joel Bennett
+// Last Modified On : 12-18-2012
+// ***********************************************************************
+// <copyright file="SplunkXmlFormatter.cs" company="Splunk">
+//     Copyright (c) 2012. All rights reserved.
+// </copyright>
+// <summary>
+//    Defines the SplunkXmlFormatter class which handles formatting for Splunk XML output streaming
+// </summary>
+// ***********************************************************************
 namespace Splunk.ModularInputs
 {
-    //<stream>
-    //  <event stanza="my_config://aaa">
-    //    <data>
-    //      09/08/2009 14:01:59.0398
-    //      event_status="(0)The operation completed successfully.
-    //    </data>
-    //    <host>my_host</host>
-    //  </event>
-    //</stream>
+    using System;
     using System.Collections.ObjectModel;
     using System.Globalization;
+    using System.Linq;
     using System.Management.Automation;
-    using System.Runtime.Serialization;
-    using System.Text.RegularExpressions;
-    using System.Xml.Serialization;
+    using System.Text;
 
-    using ModularPowerShell.Properties;
+    using Splunk.ModularInputs.Properties;
+
+    /// <summary>
+    /// List of appropriate log levels for logging functions
+    /// </summary>
+    public enum LogLevel
+    {
+        /// <summary>
+        /// Debug Messages
+        /// </summary>
+        Debug,
+
+        /// <summary>
+        /// Informational Messages
+        /// </summary>
+        Info,
+
+        /// <summary>
+        /// Warning Messages
+        /// </summary>
+        Warn,
+
+        /// <summary>
+        /// Error Messages
+        /// </summary>
+        Error,
+
+        /// <summary>
+        /// Fatal Error Messages
+        /// </summary>
+        Fatal
+    }
 
     /// <summary>
     /// Handles formatting for Splunk XML streaming
@@ -37,7 +68,7 @@ namespace Splunk.ModularInputs
         /// <summary>
         /// The names of the special properties which are recognized on objects
         /// </summary>
-        private static readonly string[] ReservedProperties = new string[] { "SplunkIndex", "SplunkSource", "SplunkHost", "SplunkSourceType", "SplunkTime" };
+        private static readonly string[] ReservedProperties = new[] { "SplunkIndex", "SplunkSource", "SplunkHost", "SplunkSourceType", "SplunkTime" };
 
         /// <summary>
         /// Convenience method to write log messages to splunkd.log
@@ -85,14 +116,10 @@ namespace Splunk.ModularInputs
         }
 
         /// <summary>
-        /// The write output.
+        /// Gets a Name="Value"; representation of the data.
         /// </summary>
-        /// <param name="output">
-        /// The output.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/> rendering.
-        /// </returns>
+        /// <param name="output">The object being output.</param>
+        /// <returns>A string representation of the object.</returns>
         public static string GetData(PSObject output)
         {
             var sb = new StringBuilder("<data>");
@@ -105,11 +132,9 @@ namespace Splunk.ModularInputs
                 var name = property.Name;
                 var hasError = false;
 
-                ////name = name.Replace("\\", "\\\\").Replace("\"", "\\\"");
                 try
                 {
                     value = property.Value.ToString();
-                    ////value = value.Replace("\\", "\\\\").Replace("\"", "\\\"");
                 }
                 catch (Exception ex)
                 {
@@ -134,7 +159,7 @@ namespace Splunk.ModularInputs
                             {
                                 time = (DateTimeOffset)property.Value;
                             }
-                            catch (Exception ex)
+                            catch
                             {
                                 if (!DateTimeOffset.TryParse(value, out time))
                                 {
@@ -167,36 +192,4 @@ namespace Splunk.ModularInputs
             return sb.Append("</data>\n").ToString();
         }
     }
-
-    /// <summary>
-    /// List of appropriate log levels for logging functions
-    /// </summary>
-    public enum LogLevel
-    {
-        /// <summary>
-        /// Debug Messages
-        /// </summary>
-        Debug,
-
-        /// <summary>
-        /// Informational Messages
-        /// </summary>
-        Info,
-
-        /// <summary>
-        /// Warning Messages
-        /// </summary>
-        Warn,
-
-        /// <summary>
-        /// Error Messages
-        /// </summary>
-        Error,
-
-        /// <summary>
-        /// Fatal Error Messages
-        /// </summary>
-        Fatal
-    }
-
 }
