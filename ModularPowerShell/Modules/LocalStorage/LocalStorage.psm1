@@ -1,18 +1,10 @@
-if($Args) { 
-	[string]$script:LocalStorageModuleName = $Args[0] 
-} elseif($LocalStorageModuleName) { 
-	[string]$script:LocalStorageModuleName = $LocalStorageModuleName
-} else {
-	[string]$script:LocalStorageModuleName = "LocalStorage" 
-}
-
 function Get-LocalStoragePath {
 	#.Synopsis
 	#   Gets the LocalApplicationData path for the specified company\module 
 	#.Description
 	#   Appends Company\Module to the LocalApplicationData, and ensures that the folder exists.
 	param(
-		# The name of the module you want to access storage for
+		# The name of the module you want to access storage for (defaults to Env:SPLUNKPS_INPUT_NAME)
 		[Parameter(Position=0)]
 		[ValidateScript({ 
 			$invalid = $_.IndexOfAny([IO.Path]::GetInvalidFileNameChars())			
@@ -22,7 +14,7 @@ function Get-LocalStoragePath {
 				throw "Invalid character in Module Name '$_' at $invalid"
 			}
 		})]			
-		[string]$Module = $LocalStorageModuleName,
+		[string]$Module = $Env:SPLUNKPS_INPUT_NAME,
 
 		# The name of a "company" to use in the storage path (defaults to "Splunk")
 		[Parameter(Position=1)]
@@ -46,7 +38,6 @@ function Get-LocalStoragePath {
 		if(!(Test-Path $path -PathType Container)) {
 			$null = New-Item $path -Type Directory -Force
 		}
-		$script:LocalStorageModuleName = $Module
 		Write-Output $path
 	}
 }
@@ -73,7 +64,7 @@ function Export-LocalStorage {
 		[Parameter(Mandatory=$true, Position=1, ValueFromPipeline=$true)]
 		$InputObject,
 
-		# A unique valid module name to use when persisting the object to disk
+		# A unique valid module name to use when persisting the object to disk (defaults to Env:SPLUNKPS_INPUT_NAME)
 		[Parameter(Position=2)]
 		[ValidateScript({ 
 			$invalid = $_.IndexOfAny([IO.Path]::GetInvalidFileNameChars())			
@@ -83,7 +74,7 @@ function Export-LocalStorage {
 				throw "Invalid character in Module Name '$_' at $invalid"
 			}
 		})]		
-		[string]$Module = $LocalStorageModuleName
+		[string]$Module = $Env:SPLUNKPS_INPUT_NAME
 	)
 	begin {
 		$path = Join-Path (Get-LocalStoragePath $Module) $Name
@@ -125,7 +116,7 @@ function Import-LocalStorage {
 		})]		
 		[string]$name,
 
-		# A unique valid module name to use when persisting the object to disk
+		# A unique valid module name to use when persisting the object to disk (defaults to Env:SPLUNKPS_INPUT_NAME)
 		[Parameter(Position=1)]
 		[ValidateScript({ 
 			$invalid = $_.IndexOfAny([IO.Path]::GetInvalidFileNameChars())			
@@ -135,17 +126,12 @@ function Import-LocalStorage {
 				throw "Invalid character in Module name '$_' at $invalid"
 			}
 		})]		
-		[string]$Module = $LocalStorageModuleName,
+		[string]$Module = $Env:SPLUNKPS_INPUT_NAME,
 
 		# A default value (used in case there's an error importing):
 		[Parameter(Position=2)]
 		[Object]$DefaultValue
 	)
-	begin {
-		if($PSBoundParameters.ContainsKey("Module")) {
-			$script:LocalStorageModuleName = $Module
-		}
-	}
 	end {
 		try {
 			$path = Join-Path (Get-LocalStoragePath $Module) $Name
@@ -160,4 +146,4 @@ function Import-LocalStorage {
 	}
 }
 
-Export-ModuleMember -Function Import-LocalStorage, Export-LocalStorage, Get-LocalStoragePath -Variable LocalStorageModuleName
+Export-ModuleMember -Function Import-LocalStorage, Export-LocalStorage, Get-LocalStoragePath
