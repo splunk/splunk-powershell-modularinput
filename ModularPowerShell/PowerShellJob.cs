@@ -78,7 +78,7 @@ namespace Splunk.ModularInputs
                 var command = data.GetString("script");
                 if (command != null)
                 {
-                    ps = ps.AddScript(command);
+                    ps = ps.AddScript(command + "|Select-Object *");
 
                     // TODO: handle scheduling instead of just executing everything
                     ////from p in stanza.Descendants("param") select new KeyValuePair<string,string>( p.Attributes("name"), p.Value );
