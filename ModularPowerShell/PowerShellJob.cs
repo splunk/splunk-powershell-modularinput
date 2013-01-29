@@ -7,7 +7,10 @@
 namespace Splunk.ModularInputs
 {
     using System;
+    using System.IO;
     using System.Management.Automation;
+    using System.Management.Automation.Runspaces;
+    using System.Reflection;
 
     using Quartz;
 
@@ -17,6 +20,44 @@ namespace Splunk.ModularInputs
     [DisallowConcurrentExecution]
     public class PowerShellJob : IJob
     {
+        static readonly InitialSessionState Iss = InitialSessionState.CreateDefault();
+
+        static PowerShellJob()
+        {
+            Assembly mps = Assembly.GetEntryAssembly();
+            string path = Path.GetDirectoryName(mps.Location);
+            if (!string.IsNullOrEmpty(path) && Directory.Exists(path))
+            {
+                path = Path.Combine(path, "Modules");
+                if (Directory.Exists(path))
+                {
+                    Iss.ImportPSModulesFromPath(path);
+                }
+                else
+                {
+                    SplunkXmlFormatter.WriteLog(LogLevel.Error, "Module path does not exist: '" + path + "'");
+                }
+            }
+            else
+            {
+                SplunkXmlFormatter.WriteLog(LogLevel.Error, "Module path does not exist: '" + path + "'");
+            }
+            // Force load any Cmdlets that are in this assembly automatically.
+            foreach (var t in mps.GetTypes())
+            {
+                var cmdlets = t.GetCustomAttributes(typeof(CmdletAttribute), false) as CmdletAttribute[];
+                if (cmdlets != null)
+                {
+                    foreach (CmdletAttribute cmdlet in cmdlets)
+                    {
+                        Iss.Commands.Add(new SessionStateCmdletEntry(
+                                            string.Format("{0}-{1}", cmdlet.VerbName, cmdlet.NounName), t,
+                                            string.Format("{0}.xml", t.Name)));
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Executes the job
         /// </summary>
@@ -30,9 +71,9 @@ namespace Splunk.ModularInputs
             try
             {
                 // Logging FYI:
-                SplunkXmlFormatter.Write(string.Format("--- Stanza: {0} ---", context.JobDetail.Key.Name));
-
-                var ps = PowerShell.Create();
+                SplunkXmlFormatter.WriteLog(string.Format("--- Stanza: {0} ---", context.JobDetail.Key.Name));
+                Environment.SetEnvironmentVariable("SPLUNKPS_INPUT_NAME", context.JobDetail.Key.Name);
+                var ps = PowerShell.Create(Iss);
                 ////ps.RunspacePool = rsp;
                 var command = data.GetString("script");
                 if (command != null)
@@ -62,14 +103,14 @@ namespace Splunk.ModularInputs
                                                 ? error.ErrorDetails.Message
                                                 : error.Exception.Message);
 
-                            SplunkXmlFormatter.Write(LogLevel.Error, msg);
-                            SplunkXmlFormatter.Write(LogLevel.Error, format);
+                            SplunkXmlFormatter.WriteLog(LogLevel.Error, msg);
+                            SplunkXmlFormatter.WriteLog(LogLevel.Error, format);
                         }
                     }
                 }
                 else
                 {
-                    SplunkXmlFormatter.Write(LogLevel.Error, "Missing 'script' parameter.");
+                    SplunkXmlFormatter.WriteLog(LogLevel.Error, "Missing 'script' parameter.");
                 }
             }
             catch (Exception ex)

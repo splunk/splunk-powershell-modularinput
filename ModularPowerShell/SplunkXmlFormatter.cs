@@ -16,6 +16,7 @@
 namespace Splunk.ModularInputs
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Globalization;
     using System.Linq;
@@ -58,7 +59,8 @@ namespace Splunk.ModularInputs
     /// <summary>
     /// Handles formatting for Splunk XML streaming
     /// </summary>
-    public static class SplunkXmlFormatter
+    [Cmdlet(VerbsData.ConvertTo, "SplunkEventXml")]
+    public class SplunkXmlFormatter : Cmdlet
     {
         /// <summary>
         /// The Unix Epoch time
@@ -70,13 +72,39 @@ namespace Splunk.ModularInputs
         /// </summary>
         private static readonly string[] ReservedProperties = new[] { "SplunkIndex", "SplunkSource", "SplunkHost", "SplunkSourceType", "SplunkTime" };
 
+       /// <summary>
+        /// Gets or sets the stanza name for the &lt;event&gt; output.
+        /// </summary>
+        /// <returns>The stanza name</returns>
+        [Parameter]
+        public string Stanza { get; set; }
+
+        /// <summary>
+        /// Gets or sets the InputObject to be output
+        /// </summary>
+        [Parameter(Mandatory = true, Position = 0, ValueFromPipeline = true)]
+        public PSObject InputObject { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value of AsXml to control whether the output is wrapped in event tags.
+        /// </summary>
+        [Parameter]
+        public SwitchParameter AsXml { get; set; }
+        
+        protected override void ProcessRecord()
+        {
+            string output = GetData(this.InputObject, this.Stanza);
+            base.WriteObject(output);
+            base.ProcessRecord();
+        }
+
         /// <summary>
         /// Convenience method to write log messages to splunkd.log
         /// </summary>
         /// <param name="msg">The message</param>
-        public static void Write(string msg)
+        internal static void WriteLog(string msg)
         {
-            Write(LogLevel.Info, msg);
+            WriteLog(LogLevel.Info, msg);
         }
 
         /// <summary>
@@ -84,21 +112,22 @@ namespace Splunk.ModularInputs
         /// </summary>
         /// <param name="level">The log level</param>
         /// <param name="msg">The message</param>
-        public static void Write(LogLevel level, string msg)
+        internal static void WriteLog(LogLevel level, string msg)
         {
             Console.Error.WriteLine("{0} {1}", level.ToString().ToUpper(), msg);
             Console.Error.Flush();
         }
 
+
         /// <summary>
         /// Writes out splunk xml events
         /// </summary>
         /// <param name="outputCollection">The PowerShell output</param>
-        public static void WriteOutput(Collection<PSObject> outputCollection)
+        internal static void WriteOutput(IEnumerable<PSObject> outputCollection)
         {
             foreach (var output in outputCollection)
             {
-                Console.Out.WriteLine("<event>\n\t{0}</event>", GetData(output));
+                Console.Out.WriteLine(GetData(output));
             }
         }
 
@@ -107,11 +136,11 @@ namespace Splunk.ModularInputs
         /// </summary>
         /// <param name="outputCollection">The PowerShell output</param>
         /// <param name="stanza">The input stanza</param>
-        public static void WriteOutput(Collection<PSObject> outputCollection, string stanza)
+        internal static void WriteOutput(IEnumerable<PSObject> outputCollection, string stanza)
         {
             foreach (var output in outputCollection)
             {
-                Console.Out.WriteLine("<event stanza=\"{1}\">\n\t{0}</event>", GetData(output), stanza);
+                Console.Out.WriteLine(GetData(output, stanza));
             }
         }
 
@@ -120,10 +149,15 @@ namespace Splunk.ModularInputs
         /// </summary>
         /// <param name="output">The object being output.</param>
         /// <returns>A string representation of the object.</returns>
-        public static string GetData(PSObject output)
+        private static string GetData(PSObject output, string stanza = null)
         {
-            var sb = new StringBuilder("<data>");
+            if (output.BaseObject is string)
+            {
+                return output.BaseObject as string;
+            }
 
+            var sb = new StringBuilder("<data>");
+            
             // NOTE: we have to ignore Script Properties, because they require a runspace
             bool hasTime = false;
             foreach (var property in output.Properties.Where(p => p.MemberType != PSMemberTypes.ScriptProperty && p.IsGettable))
@@ -142,7 +176,7 @@ namespace Splunk.ModularInputs
                     if (Settings.Default.LogOutputErrors)
                     {
                         // TODO: Should we log these to a per-script location?
-                        Write(LogLevel.Error, ex.Message + "\nSTACK TRACE:\n" + ex.StackTrace);
+                        WriteLog(LogLevel.Error, ex.Message + " Encountered while reading '"+ name +"'.\nSTACK TRACE:\n" + ex.StackTrace);
                     }
                 }
 
@@ -181,7 +215,7 @@ namespace Splunk.ModularInputs
                 }
             }
 
-            // make sure we always define the time
+            // make sure we *always* define the time
             if (!hasTime)
             {
                 // convert the time to unix epoch time
@@ -189,7 +223,10 @@ namespace Splunk.ModularInputs
                 sb.Insert(0, "<time>" + value + "</time>\n");
             }
 
-            return sb.Append("</data>\n").ToString();
+            // wrap the whole thing inside an event tag
+            sb.Insert(0, string.Format("<event {0}>", string.IsNullOrEmpty(stanza) ? "" : "stanza=\"" + stanza + "\""));
+
+            return sb.Append("</data></event>\n").ToString();
         }
     }
 }

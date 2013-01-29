@@ -42,7 +42,7 @@ namespace Splunk.ModularInputs
         /// <param name="args">The arguments</param>
         public static void Main(string[] args)
         {
-            SplunkXmlFormatter.Write(LogLevel.Info, string.Format("PowerShell.exe {0}", string.Join(" ", args)));
+            SplunkXmlFormatter.WriteLog(LogLevel.Info, string.Format("PowerShell.exe {0}", string.Join(" ", args)));
 
             XElement input = null;
             try
@@ -51,11 +51,11 @@ namespace Splunk.ModularInputs
             }
             catch (Exception ex)
             {
-                SplunkXmlFormatter.Write(LogLevel.Error, "Failed to parse inputs");
-                SplunkXmlFormatter.Write(LogLevel.Error, ex.Message);
+                SplunkXmlFormatter.WriteLog(LogLevel.Error, "Failed to parse inputs");
+                SplunkXmlFormatter.WriteLog(LogLevel.Error, ex.Message);
                 if (ex.InnerException != null)
                 {
-                    SplunkXmlFormatter.Write(LogLevel.Error, ex.InnerException.Message);                   
+                    SplunkXmlFormatter.WriteLog(LogLevel.Error, ex.InnerException.Message);                   
                 }
 
                 Environment.Exit(4);
@@ -74,26 +74,38 @@ namespace Splunk.ModularInputs
 
             var scheduler = StdSchedulerFactory.GetDefaultScheduler();
             scheduler.Start();
-
-            var jobs = (from stanza in input.Descendants("stanza")
-                        let job =
-                            JobBuilder.Create<PowerShellJob>()
-                                      .UsingJobData("script", stanza.GetParameterValue("script"))
-                                      .WithIdentity(stanza.Attribute("name").Value)
-                                      .Build()
-                        let trigger =
-                            TriggerBuilder.Create()
-                                          .WithSchedule(
-                                              CronScheduleBuilder.CronSchedule(stanza.GetParameterValue("schedule")))
-                                          .StartNow()
+            try {
+                var jobs = (from stanza in input.Descendants("stanza")
+                            let job =
+                                JobBuilder.Create<PowerShellJob>()
+                                          .UsingJobData("script", stanza.GetParameterValue("script"))
+                                          .WithIdentity(stanza.Attribute("name").Value)
                                           .Build()
-                        select new { job, trigger }).ToDictionary(k => k.job, v => (IList<ITrigger>)new[] { v.trigger });
+                            let trigger =
+                                TriggerBuilder.Create()
+                                              .WithSchedule(
+                                                  CronScheduleBuilder.CronSchedule(stanza.GetParameterValue("schedule")))
+                                              .StartNow()
+                                              .Build()
+                            select new { job, trigger }).ToDictionary(k => k.job, v => (IList<ITrigger>)new[] { v.trigger });
 
-            scheduler.ScheduleJobs(jobs, true);
+                scheduler.ScheduleJobs(jobs, true);
+            }
+            catch (Exception ex)
+            {
+                SplunkXmlFormatter.WriteLog(LogLevel.Error, "Failed to schedule jobs in Quartz");
+                SplunkXmlFormatter.WriteLog(LogLevel.Error, ex.Message);
+                if (ex.InnerException != null)
+                {
+                    SplunkXmlFormatter.WriteLog(LogLevel.Error, ex.InnerException.Message);
+                }
+
+                Environment.Exit(5);
+            }
 
             // TODO: Finalize output
             // Console.Out.WriteLine("</stream>");
-            SplunkXmlFormatter.Write("Finished InputDefinition");
+            SplunkXmlFormatter.WriteLog("Finished InputDefinition");
         }
 
         /// <summary>
@@ -135,23 +147,23 @@ namespace Splunk.ModularInputs
                 }
                 else if (args[0].ToLowerInvariant().Equals("--validate_arguments"))
                 {
-                    SplunkXmlFormatter.Write(LogLevel.Error, "--validate_arguments not implemented yet");
+                    SplunkXmlFormatter.WriteLog(LogLevel.Error, "--validate_arguments not implemented yet");
                     Environment.Exit(1);
                 }
                 else if (args[0].ToLowerInvariant().Equals("--input") && args.Length == 2)
                 {
-                    SplunkXmlFormatter.Write("Reading InputDefinition from parameter for testing");
+                    SplunkXmlFormatter.WriteLog("Reading InputDefinition from parameter for testing");
                     input = XDocument.Load(args[1]);
                 }
                 else
                 {
-                    SplunkXmlFormatter.Write(LogLevel.Error, Usage);
+                    SplunkXmlFormatter.WriteLog(LogLevel.Error, Usage);
                     Environment.Exit(2);
                 }
             }
             else
             {
-                SplunkXmlFormatter.Write("Reading InputDefinition");
+                SplunkXmlFormatter.WriteLog("Reading InputDefinition");
                 input = XDocument.Parse(Console.In.ReadToEnd());
             }
 
@@ -171,7 +183,7 @@ namespace Splunk.ModularInputs
                 throw new InvalidDataException("input is not valid input xml");
             }
 
-            SplunkXmlFormatter.Write(LogLevel.Info, id.ToString());
+            SplunkXmlFormatter.WriteLog(LogLevel.Info, id.ToString());
             return id;
         }
 
