@@ -27,7 +27,7 @@ When writing scripts for miPowerShell, there are a few key issues. Since this is
     [powershell://MSExchange_Health]
     script=${Env:SPLUNK_HOME}/etc/apps/TA-Exchange-2010/powershell/health.ps1
 
-The miPowerShell TA for splunk includes a PowerShel Module called "LocalStorage" which exposes three cmdlets: Get-LocalStoragePath, Export-LocalStorage, and Import-LocalStorage. These cmdlets write by default to the splunk checkpoint dir for your input, and can be used to persist PowerShell objects as state between scheduled runs of your script (since nothing else should persist).
+The miPowerShell TA for splunk includes a PowerShel Module called [LocalStorage](https://github.com/splunk/splunk-powershell-modularinput/tree/master/ModularPowerShell/Modules/LocalStorage) which exposes three cmdlets: Get-LocalStoragePath, Export-LocalStorage, and Import-LocalStorage. These cmdlets write by default to the splunk checkpoint dir for your input, and can be used to persist PowerShell objects as state between scheduled runs of your script (since nothing else should persist).
 
 Besides the SPLUNK_HOME variable, there are several other environment variables which you should be aware of. In particular:
 
@@ -38,10 +38,18 @@ Besides the SPLUNK_HOME variable, there are several other environment variables 
 * SPLUNKPS\_CHECKPOINT\_DIR - the location where splunk has us storing all checkpoint data
 * SPLUNKPS\_SERVER\_HOST 
 
-Additionally, you should be aware that there are several property names which have special significance in miPowerShell output, and allow you to override the defaults defined in the input.conf stanza by providing them:
+### Output
+
+All properties on any objects that are output by your script will be converted to key="value" strings and output for Splunk (wrapped in data/event/stream tags). There are a few property names, however, which have special significance in miPowerShell output, and allow you to override the defaults defined in the input.conf stanza by providing them:
 
 * SplunkIndex
 * SplunkSource
 * SplunkHost
 * SplunkSourceType
 * SplunkTime
+
+Typically the way to add those would be as calculated expressions with Select-Object or Add-Member.
+
+### Testing
+
+Trying to test these scripts to verify how they run in miPowerShell can be a bit tricky if you have to involve all of Splunk, so I added a --input parameter which accepts the xml that Splunk would normally send us a file path instead. Thus, if you take the [sample_input.xml](https://github.com/splunk/splunk-powershell-modularinput/blob/master/ModularPowerShell/sample_input.xml) and pass it's path to miPowerShell.exe you should see it set up and start to run the script(s) on the specified schedule(s).
