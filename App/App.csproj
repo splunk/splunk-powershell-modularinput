@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- default settings -->
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>1.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2146681F-33E5-4078-9F6D-AC880E7AC699}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NotUsed</RootNamespace>
+    <AssemblyName>DeleteMe</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile></TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\Output\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Output\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="SA-ModularInput-PowerShell\bin\Modules\LocalStorage\LocalStorage.psm1">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SA-ModularInput-PowerShell\default\app.conf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SA-ModularInput-PowerShell\metadata\default.meta">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SA-ModularInput-PowerShell\readme\sample_input.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SA-ModularInput-PowerShell\readme\README.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+     
+  <ItemGroup>
+    <ProjectReference Include="..\ModularPowerShell\ModularPowerShell.csproj">
+      <!-- note this special output location -->
+      <DestinationSubDirectory>SA-ModularInput-PowerShell\bin\</DestinationSubDirectory>
+      <Project>{582fd7ff-27bc-4754-8360-92ad1f6604bf}</Project>
+      <Name>ModularPowerShell</Name>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <!-- <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" /> -->
+ <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
+  <!-- We're dealing with App as a C# application only because that is the simplest way
+       to get it to show up nicely in visual studio, and copy the other projects out.
+       
+       *** That means that building produces output. ***
+
+       To fix that, stop Build from calling CopyFilesToOutputDirectory, and only copy:
+        _CopyFilesMarkedCopyLocal - the ProjectReference
+        _CopySourceItemsToOutputDirectory - the "Content" items above
+
+       NOTE: This is not necessary. Our AfterBuild step ignores that output anyway.
+             But it's cleaner and less confusing (no random Output\Release\DeleteMe.dll)             
+  --> 
+ <PropertyGroup>
+    <!-- this is a minimal build which doesn't copy the compiled output of "App" (See Above) -->
+    <BuildDependsOn>BeforeBuild;BuildOnlySettings;ResolveReferences;ResolveKeySource;
+      AssignTargetPaths;_CopyFilesMarkedCopyLocal;_CopySourceItemsToOutputDirectory;
+      AfterBuild;
+    </BuildDependsOn>
+  </PropertyGroup>
+  <Target Name="AfterBuild">
+    <!-- put .tar.gz command here. Target: $(OutDir)\SA-ModularInput-PowerShell -->
+  </Target>
+</Project>
