@@ -23,6 +23,8 @@ namespace Splunk.ModularInputs
     using Quartz;
     using Quartz.Impl;
 
+    using Splunk.ModularInputs.Properties;
+
     /// <summary>
     /// The PowerShell Modular Input Program.
     /// </summary>
@@ -42,6 +44,10 @@ namespace Splunk.ModularInputs
         /// <param name="args">The arguments</param>
         public static void Main(string[] args)
         {
+            // configure the logger
+            SplunkXmlFormatter.LogOutputErrors = Settings.Default.LogOutputErrors;
+            SplunkXmlFormatter.OutputBlanksOnError = Settings.Default.OutputBlanksOnError;
+            // log our command line
             SplunkXmlFormatter.WriteLog(LogLevel.Info, string.Format("PowerShell.exe {0}", string.Join(" ", args)));
 
             XElement input = null;

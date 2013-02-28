@@ -23,7 +23,6 @@ namespace Splunk.ModularInputs
     using System.Management.Automation;
     using System.Text;
 
-    using Splunk.ModularInputs.Properties;
 
     /// <summary>
     /// List of appropriate log levels for logging functions
@@ -93,7 +92,7 @@ namespace Splunk.ModularInputs
         
         protected override void ProcessRecord()
         {
-            string output = GetData(this.InputObject, this.Stanza);
+            var output = GetData(this.InputObject, this.Stanza);
             base.WriteObject(output);
             base.ProcessRecord();
         }
@@ -102,7 +101,7 @@ namespace Splunk.ModularInputs
         /// Convenience method to write log messages to splunkd.log
         /// </summary>
         /// <param name="msg">The message</param>
-        internal static void WriteLog(string msg)
+        public static void WriteLog(string msg)
         {
             WriteLog(LogLevel.Info, msg);
         }
@@ -112,7 +111,7 @@ namespace Splunk.ModularInputs
         /// </summary>
         /// <param name="level">The log level</param>
         /// <param name="msg">The message</param>
-        internal static void WriteLog(LogLevel level, string msg)
+        public static void WriteLog(LogLevel level, string msg)
         {
             Console.Error.WriteLine("{0} {1}", level.ToString().ToUpper(), msg);
             Console.Error.Flush();
@@ -123,7 +122,7 @@ namespace Splunk.ModularInputs
         /// Writes out splunk xml events
         /// </summary>
         /// <param name="outputCollection">The PowerShell output</param>
-        internal static void WriteOutput(IEnumerable<PSObject> outputCollection)
+        public static void WriteOutput(IEnumerable<PSObject> outputCollection)
         {
             foreach (var output in outputCollection)
             {
@@ -136,7 +135,7 @@ namespace Splunk.ModularInputs
         /// </summary>
         /// <param name="outputCollection">The PowerShell output</param>
         /// <param name="stanza">The input stanza</param>
-        internal static void WriteOutput(IEnumerable<PSObject> outputCollection, string stanza)
+        public static void WriteOutput(IEnumerable<PSObject> outputCollection, string stanza)
         {
             foreach (var output in outputCollection)
             {
@@ -148,18 +147,32 @@ namespace Splunk.ModularInputs
         /// Gets a Name="Value"; representation of the data.
         /// </summary>
         /// <param name="output">The object being output.</param>
+        /// <param name="stanza">A name to use for the stanza attribute</param>
         /// <returns>A string representation of the object.</returns>
         private static string GetData(PSObject output, string stanza = null)
         {
+            var sb = KeyValuePairs(output);
+
+            // wrap the whole thing inside an event tag
+            sb.Insert(0, string.Format("<event {0}>", string.IsNullOrEmpty(stanza) ? "" : "stanza=\"" + stanza + "\""));
+
+            return sb.Append("</data></event>\n").ToString();
+        }
+
+        private static StringBuilder KeyValuePairs(PSObject output)
+        {
+            bool hasTime = false;
+            var sb = new StringBuilder("<data>");
+
+            // If they output a string, it had better already be in key=value format
             if (output.BaseObject is string)
             {
-                return output.BaseObject as string;
+                sb.Append(output);
             }
 
-            var sb = new StringBuilder("<data>");
-            
-            // NOTE: we have to ignore Script Properties, because they require a runspace
-            bool hasTime = false;
+            // We still process the properties, because in PowerShell Strings can have ETS properties
+            // Specifically, we might be adding Splunk* data
+            // TODO: if we're in use as a cmdlet, we have a runspace, and can process Script Properties
             foreach (var property in output.Properties.Where(p => p.MemberType != PSMemberTypes.ScriptProperty && p.IsGettable))
             {
                 var value = string.Empty;
@@ -173,14 +186,16 @@ namespace Splunk.ModularInputs
                 catch (Exception ex)
                 {
                     hasError = true;
-                    if (Settings.Default.LogOutputErrors)
+                    if (LogOutputErrors)
                     {
                         // TODO: Should we log these to a per-script location?
-                        WriteLog(LogLevel.Error, ex.Message + " Encountered while reading '"+ name +"'.\nSTACK TRACE:\n" + ex.StackTrace);
+                        WriteLog(
+                            LogLevel.Error,
+                            ex.Message + " Encountered while reading '" + name + "'.\nSTACK TRACE:\n" + ex.StackTrace);
                     }
                 }
 
-                if (!hasError || Settings.Default.OutputBlanksOnError)
+                if (!hasError || OutputBlanksOnError)
                 {
                     // Handle special property names
                     if (!hasError && Array.IndexOf(ReservedProperties, name) > 0)
@@ -222,11 +237,19 @@ namespace Splunk.ModularInputs
                 var value = (DateTimeOffset.UtcNow - Epoch).TotalSeconds.ToString(CultureInfo.InvariantCulture);
                 sb.Insert(0, "<time>" + value + "</time>\n");
             }
-
-            // wrap the whole thing inside an event tag
-            sb.Insert(0, string.Format("<event {0}>", string.IsNullOrEmpty(stanza) ? "" : "stanza=\"" + stanza + "\""));
-
-            return sb.Append("</data></event>\n").ToString();
+            return sb;
         }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to output blank values when there's an error
+        /// </summary>
+        /// <value><c>true</c> to output even on error; otherwise, <c>false</c>.</value>
+        public static bool OutputBlanksOnError { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to log output errors.
+        /// </summary>
+        /// <value><c>true</c> to log errors; otherwise, <c>false</c>.</value>
+        public static bool LogOutputErrors { get; set; }
     }
 }

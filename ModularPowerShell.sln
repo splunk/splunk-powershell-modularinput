@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{D2970E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "App", "App\App.csproj", "{2146681F-33E5-4078-9F6D-AC880E7AC699}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularInputsModule", "ModularInputsModule\ModularInputsModule.csproj", "{4F443816-37C1-4B20-B243-0316BE559BA9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,16 @@ Global
 		{2146681F-33E5-4078-9F6D-AC880E7AC699}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{2146681F-33E5-4078-9F6D-AC880E7AC699}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{2146681F-33E5-4078-9F6D-AC880E7AC699}.Release|x64.ActiveCfg = Release|Any CPU
+		{4F443816-37C1-4B20-B243-0316BE559BA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F443816-37C1-4B20-B243-0316BE559BA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F443816-37C1-4B20-B243-0316BE559BA9}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{4F443816-37C1-4B20-B243-0316BE559BA9}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{4F443816-37C1-4B20-B243-0316BE559BA9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4F443816-37C1-4B20-B243-0316BE559BA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F443816-37C1-4B20-B243-0316BE559BA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F443816-37C1-4B20-B243-0316BE559BA9}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{4F443816-37C1-4B20-B243-0316BE559BA9}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{4F443816-37C1-4B20-B243-0316BE559BA9}.Release|x64.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

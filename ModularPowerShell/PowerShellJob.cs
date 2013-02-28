@@ -24,6 +24,7 @@ namespace Splunk.ModularInputs
 
         static PowerShellJob()
         {
+            
             Assembly mps = Assembly.GetEntryAssembly();
             string path = Path.GetDirectoryName(mps.Location);
             if (!string.IsNullOrEmpty(path) && Directory.Exists(path))
@@ -78,7 +79,7 @@ namespace Splunk.ModularInputs
                 var command = data.GetString("script");
                 if (command != null)
                 {
-                    ps = ps.AddScript(command + "|Select-Object *");
+                    ps = ps.AddScript(command);
 
                     // TODO: handle scheduling instead of just executing everything
                     ////from p in stanza.Descendants("param") select new KeyValuePair<string,string>( p.Attributes("name"), p.Value );
@@ -115,6 +116,7 @@ namespace Splunk.ModularInputs
             }
             catch (Exception ex)
             {
+                SplunkXmlFormatter.WriteLog(LogLevel.Error, "PowerShell Error:\r\n" + ex.Message);
                 throw new JobExecutionException("Failed to execute PowerShell Script", ex);
             }
         }

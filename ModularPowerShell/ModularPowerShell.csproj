@@ -90,7 +90,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="SplunkXmlFormatter.cs" />
     <Compile Include="SplunkXmlHelpers.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -103,6 +102,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="vspowershell.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ModularInputsModule\ModularInputsModule.csproj">
+      <Project>{4f443816-37c1-4b20-b243-0316be559ba9}</Project>
+      <Name>ModularInputsModule</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

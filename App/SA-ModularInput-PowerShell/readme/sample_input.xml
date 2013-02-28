@@ -12,7 +12,6 @@
       <param name="index">main</param>
       <param name="source">powershell</param>
       <param name="sourcetype">powershell_testing</param>
-
       <param name="script">Get-Module | Select-Object ModuleType, Name, Path, ExportedCommands</param>
       <param name="schedule">0/15 * * ? * *</param>
     </stanza>
@@ -23,11 +22,12 @@
       <param name="sourcetype">powershell_testing</param>
 
       <param name="script">
-        $Path = Get-LocalStoragePath
-        [int]$Count = Import-LocalStorage -Name Count -Module Testing -Default 1
-        $Count += 1
-        New-Object PSObject -Prop @{ Name = "Testing"; Count = $Count; Storage = $Path }
-        Export-LocalStorage -Name Count -Module Testing $Count
+        get-executionpolicy -list
+        # $Path = Get-LocalStoragePath
+        # [int]$Count = Import-LocalStorage -Name Count -Module Testing -Default 1
+        # $Count += 1
+        # New-Object PSObject -Prop @{ Name = "Testing"; Count = $Count; Storage = $Path }
+        # Export-LocalStorage -Name Count -Module Testing $Count
       </param>
       <param name="schedule">0/15 * * ? * *</param>
     </stanza>
