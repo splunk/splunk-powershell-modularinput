@@ -7,6 +7,7 @@
 namespace Splunk.ModularInputs
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Management.Automation;
     using System.Management.Automation.Runspaces;
@@ -14,25 +15,57 @@ namespace Splunk.ModularInputs
 
     using Quartz;
 
-    /// <summary>
-    /// Defines a Quartz Job that executes PowerShell scripts
-    /// </summary>
-    [DisallowConcurrentExecution]
-    public class PowerShellJob : IJob
+    public static class SessionStateHelper
     {
-        static readonly InitialSessionState Iss = InitialSessionState.CreateDefault();
-
-        static PowerShellJob()
+        /// <summary>
+        /// Loads any cmdlets defined in the specified types
+        /// </summary>
+        /// <param name="iss">The InitialSessionState.</param>
+        /// <param name="types">The types which might be cmdlets.</param>
+        /// <returns>The InitialSessionState with the commands added.</returns>
+        public static InitialSessionState LoadCmdlets(this InitialSessionState iss, IEnumerable<Type> types)
         {
-            
-            Assembly mps = Assembly.GetEntryAssembly();
-            string path = Path.GetDirectoryName(mps.Location);
+            foreach (var t in types)
+            {
+                var cmdlets = t.GetCustomAttributes(typeof(CmdletAttribute), false) as CmdletAttribute[];
+                if (cmdlets != null)
+                {
+                    foreach (CmdletAttribute cmdlet in cmdlets)
+                    {
+                        iss.Commands.Add(
+                            new SessionStateCmdletEntry(
+                                string.Format("{0}-{1}", cmdlet.VerbName, cmdlet.NounName), t, string.Format("{0}.xml", t.Name)));
+                    }
+                }
+            }
+            return iss;
+        }
+
+        /// <summary>
+        /// Loads any cmdlets defined in the specified assembly
+        /// </summary>
+        /// <param name="iss">The InitialSessionState.</param>
+        /// <param name="assembly">The assembly which contains cmdlets.</param>
+        /// <returns>The InitialSessionState with the commands added.</returns>
+        public static InitialSessionState LoadCmdlets(this InitialSessionState iss, Assembly assembly)
+        {
+            return LoadCmdlets(iss, assembly.GetTypes());
+        }
+
+        /// <summary>
+        /// Loads any modules defined in the specified path
+        /// </summary>
+        /// <param name="iss">The InitialSessionState.</param>
+        /// <param name="path">The path.</param>
+        /// <returns>The InitialSessionState with the modules added.</returns>
+        public static InitialSessionState LoadModules(this InitialSessionState iss, string path)
+        {
             if (!string.IsNullOrEmpty(path) && Directory.Exists(path))
             {
                 path = Path.Combine(path, "Modules");
                 if (Directory.Exists(path))
                 {
-                    Iss.ImportPSModulesFromPath(path);
+                    iss.ImportPSModulesFromPath(path);
                 }
                 else
                 {
@@ -43,20 +76,39 @@ namespace Splunk.ModularInputs
             {
                 SplunkXmlFormatter.WriteLog(LogLevel.Error, "Module path does not exist: '" + path + "'");
             }
-            // Force load any Cmdlets that are in this assembly automatically.
-            foreach (var t in mps.GetTypes())
-            {
-                var cmdlets = t.GetCustomAttributes(typeof(CmdletAttribute), false) as CmdletAttribute[];
-                if (cmdlets != null)
-                {
-                    foreach (CmdletAttribute cmdlet in cmdlets)
-                    {
-                        Iss.Commands.Add(new SessionStateCmdletEntry(
-                                            string.Format("{0}-{1}", cmdlet.VerbName, cmdlet.NounName), t,
-                                            string.Format("{0}.xml", t.Name)));
-                    }
-                }
-            }
+
+            return iss;
+        }
+
+    }
+
+    /// <summary>
+    /// Defines a Quartz Job that executes PowerShell scripts
+    /// </summary>
+    [DisallowConcurrentExecution]
+    public class PowerShellJob : IJob
+    {
+        private static readonly InitialSessionState Iss;
+
+        /// <summary>
+        /// Initializes static members of the <see cref="PowerShellJob"/> class.
+        /// </summary>
+        static PowerShellJob()
+        {
+            Iss = ConfigureSessionState();
+        }
+
+        /// <summary>
+        /// Configures the initial state of the sessions.
+        /// </summary>
+        /// <returns>InitialSessionState.</returns>
+        private static InitialSessionState ConfigureSessionState()
+        {
+            Assembly mps = Assembly.GetEntryAssembly();
+
+            string path = Path.GetDirectoryName(mps.Location);
+
+            return InitialSessionState.CreateDefault().LoadModules(path).LoadCmdlets(mps);
         }
 
         /// <summary>
