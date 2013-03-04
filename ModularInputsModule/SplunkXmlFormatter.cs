@@ -84,6 +84,15 @@ namespace Splunk.ModularInputs
         [Parameter(Mandatory = true, Position = 0, ValueFromPipeline = true)]
         public PSObject InputObject { get; set; }
 
+
+        /// <summary>
+        /// Gets or sets the list of properties that we want to output
+        /// </summary>
+        /// <value>The property names.</value>
+        [Parameter]
+        public HashSet<string> Property { get; set; }
+
+
         /// <summary>
         /// Gets or sets the value of AsXml to control whether the output is wrapped in event tags.
         /// </summary>
@@ -92,7 +101,7 @@ namespace Splunk.ModularInputs
         
         protected override void ProcessRecord()
         {
-            var output = GetData(this.InputObject, this.Stanza);
+            var output = GetData(this.InputObject, this.Stanza, this.Property);
             base.WriteObject(output);
             base.ProcessRecord();
         }
@@ -148,10 +157,26 @@ namespace Splunk.ModularInputs
         /// </summary>
         /// <param name="output">The object being output.</param>
         /// <param name="stanza">A name to use for the stanza attribute</param>
+        /// <param name="properties">The names of the properties to output</param>
         /// <returns>A string representation of the object.</returns>
-        private static string GetData(PSObject output, string stanza = null)
+        private static string GetData(PSObject output, string stanza = null, HashSet<string> properties = null)
         {
-            var sb = KeyValuePairs(output);
+
+            IEnumerable<PSPropertyInfo> psPropertyInfos;
+            if (properties == null || properties.Count == 0)
+            {
+                psPropertyInfos = output.Properties.Where(p => p.MemberType != PSMemberTypes.ScriptProperty && p.IsGettable);
+            }
+            else
+            {
+                psPropertyInfos =
+                    output.Properties.Where(p =>
+                        properties.Contains(p.Name, StringComparer.InvariantCultureIgnoreCase) &&
+                        p.MemberType != PSMemberTypes.ScriptProperty &&
+                        p.IsGettable);
+            }
+
+            var sb = KeyValuePairs(output, psPropertyInfos);
 
             // wrap the whole thing inside an event tag
             sb.Insert(0, string.Format("<event {0}>", string.IsNullOrEmpty(stanza) ? "" : "stanza=\"" + stanza + "\""));
@@ -159,21 +184,16 @@ namespace Splunk.ModularInputs
             return sb.Append("</data></event>\n").ToString();
         }
 
-        private static StringBuilder KeyValuePairs(PSObject output)
+        private static StringBuilder KeyValuePairs(PSObject output, IEnumerable<PSPropertyInfo> psPropertyInfos)
         {
             bool hasTime = false;
             var sb = new StringBuilder("<data>");
 
-            // If they output a string, it had better already be in key=value format
-            if (output.BaseObject is string)
-            {
-                sb.Append(output);
-            }
-
             // We still process the properties, because in PowerShell Strings can have ETS properties
             // Specifically, we might be adding Splunk* data
             // TODO: if we're in use as a cmdlet, we have a runspace, and can process Script Properties
-            foreach (var property in output.Properties.Where(p => p.MemberType != PSMemberTypes.ScriptProperty && p.IsGettable))
+            
+            foreach (PSPropertyInfo property in psPropertyInfos)
             {
                 var value = string.Empty;
                 var name = property.Name;
@@ -228,6 +248,12 @@ namespace Splunk.ModularInputs
                         sb.AppendFormat("{0}=\"{1}\"\n", name, value);
                     }
                 }
+            }
+
+            // If they output a string, it had better already be in a splunk-compatible format
+            if (output.BaseObject is string || output.GetType().IsPrimitive)
+            {
+                sb.Append(output + "\n");
             }
 
             // make sure we *always* define the time
