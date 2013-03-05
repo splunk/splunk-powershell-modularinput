@@ -16,6 +16,7 @@
 namespace Splunk.ModularInputs
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Globalization;
@@ -54,6 +55,7 @@ namespace Splunk.ModularInputs
         /// </summary>
         Fatal
     }
+
 
     /// <summary>
     /// Handles formatting for Splunk XML streaming
@@ -161,22 +163,28 @@ namespace Splunk.ModularInputs
         /// <returns>A string representation of the object.</returns>
         private static string GetData(PSObject output, string stanza = null, HashSet<string> properties = null)
         {
-
-            IEnumerable<PSPropertyInfo> psPropertyInfos;
-            if (properties == null || properties.Count == 0)
+            StringBuilder sb;
+            IEnumerable<dynamic> values;
+            if (output.BaseObject is IEnumerable<KeyValuePair<string, object>>)
             {
-                psPropertyInfos = output.Properties.Where(p => p.MemberType != PSMemberTypes.ScriptProperty && p.IsGettable);
+                values = GetKeyValues(output.BaseObject as IEnumerable<KeyValuePair<string, object>>, properties);
+            }
+            else if (output.BaseObject is IDictionary)
+            {
+                values = GetKeyValues(output.BaseObject as IDictionary, properties);
             }
             else
             {
-                psPropertyInfos =
-                    output.Properties.Where(p =>
-                        properties.Contains(p.Name, StringComparer.InvariantCultureIgnoreCase) &&
-                        p.MemberType != PSMemberTypes.ScriptProperty &&
-                        p.IsGettable);
+                values = GetProperties(output.Properties, properties);
             }
 
-            var sb = KeyValuePairs(output, psPropertyInfos);
+            sb = KeyValuePairs(values);
+
+            // If they output a string, it had better already be in a splunk-compatible format
+            if (output.BaseObject is string || output.GetType().IsPrimitive)
+            {
+                sb.Append(output + "\n");
+            }
 
             // wrap the whole thing inside an event tag
             sb.Insert(0, string.Format("<event {0}>", string.IsNullOrEmpty(stanza) ? "" : "stanza=\"" + stanza + "\""));
@@ -184,7 +192,55 @@ namespace Splunk.ModularInputs
             return sb.Append("</data></event>\n").ToString();
         }
 
-        private static StringBuilder KeyValuePairs(PSObject output, IEnumerable<PSPropertyInfo> psPropertyInfos)
+        private static IEnumerable<dynamic> GetProperties(IEnumerable<PSPropertyInfo> output, IEnumerable<string> properties)
+        {
+            if (properties == null)
+            {
+                return output.Where(p => p.MemberType != PSMemberTypes.ScriptProperty && p.IsGettable);
+            }
+            else
+            {
+                return output.Where(
+                        p =>
+                        properties.Contains(p.Name, StringComparer.InvariantCultureIgnoreCase)
+                        && p.MemberType != PSMemberTypes.ScriptProperty && p.IsGettable);
+            }
+        }
+
+        private static IEnumerable<dynamic> GetKeyValues(IEnumerable<KeyValuePair<string, object>> output, ICollection<string> properties)
+        {
+            if (properties == null)
+            {
+                return output.Select(kv=> new {Name = kv.Key, Value =kv.Value});
+            }
+            else
+            {
+                return output.Where(kv => properties.Contains(kv.Key)).Select(kv => new { Name = kv.Key, Value = kv.Value });
+            }
+        }
+
+
+        private static IEnumerable<dynamic> GetKeyValues(IDictionary output, IEnumerable<string> properties)
+        {
+            if (properties == null)
+            {
+                foreach (DictionaryEntry kv in output)
+                {
+                    yield return new {Name = kv.Key.ToString(), kv.Value};
+                }
+            }
+            else
+            {
+                foreach (var name in properties.Where(output.Contains))
+                {
+                    yield return new { Name = name, Value = output[name] };
+                }
+            }
+        }
+
+
+
+        private static StringBuilder KeyValuePairs(IEnumerable<dynamic> psPropertyInfos)
         {
             bool hasTime = false;
             var sb = new StringBuilder("<data>");
@@ -218,7 +274,7 @@ namespace Splunk.ModularInputs
                 if (!hasError || OutputBlanksOnError)
                 {
                     // Handle special property names
-                    if (!hasError && Array.IndexOf(ReservedProperties, name) > 0)
+                    if (!hasError && Array.IndexOf(ReservedProperties, name) >= 0)
                     {
                         name = name.Remove(0, 6).ToLowerInvariant();
                         if (name.Equals("time"))
@@ -250,11 +306,7 @@ namespace Splunk.ModularInputs
                 }
             }
 
-            // If they output a string, it had better already be in a splunk-compatible format
-            if (output.BaseObject is string || output.GetType().IsPrimitive)
-            {
-                sb.Append(output + "\n");
-            }
+
 
             // make sure we *always* define the time
             if (!hasTime)
