@@ -15,15 +15,24 @@ namespace ModularPowerShell.Specs
     using Xunit;
 
     [Binding]
-    public class BugFixesSteps
+    public class BugFixesSteps : Steps
     {
         [Given(@"I have a PowerShell job")]
         public void GivenIHaveAPowerShellJob()
         {
+            Given("I have an Object Logger");
+            var powerShellJob = new PowerShellJob
+            {
+                Logger = ScenarioContext.Current.Get<ILogger>("OutputLog")
+            };
+            ScenarioContext.Current.Add("PowerShellJob", powerShellJob);
+        }
+
+        [Given(@"I have an Object Logger")]
+        public void GivenIHaveAnObjectLogger()
+        {
             var objectLogger = new ObjectLogger();
             ScenarioContext.Current.Add("OutputLog", objectLogger);
-            var powerShellJob = new PowerShellJob { Logger = objectLogger };
-            ScenarioContext.Current.Add("PowerShellJob", powerShellJob);
         }
 
         [Given(@"the script outputs nulls \(intermixed with real data\)")]
@@ -65,17 +74,18 @@ namespace ModularPowerShell.Specs
             Assert.DoesNotContain(null,output);
         }
 
-        [Given(@"I have an (.*) string")]
-        public void GivenIHaveAString(string name)
+        [Given(@"I have an output string")]
+        public void GivenIHaveAnOutputString()
         {
-            ScenarioContext.Current.Add(name,"Hello World");
+            Given("I have an Object Logger");
+            ScenarioContext.Current.Get<ObjectLogger>("OutputLog").WriteOutput(new PSObject("Hello World"), "Test");
         }
 
-        [When(@"I call ConvertToString with the (.*) string")]
-        public void WhenICallXmlFormatterConvertToString(string name)
+        [When(@"I call ConvertToString with the output string")]
+        public void WhenICallConvertToString()
         {
-            var output = new PSObject(ScenarioContext.Current[name]);
-            var xml = XmlFormatter.ConvertToString(output);
+            var output = ScenarioContext.Current.Get<ObjectLogger>("OutputLog").Output["Test"];
+            var xml = XmlFormatter.ConvertToString(output.First() as PSObject);
             ScenarioContext.Current.Add("XmlEventString", xml);
         }
 
@@ -104,11 +114,24 @@ namespace ModularPowerShell.Specs
         {
             if (!ScenarioContext.Current.ContainsKey("XmlEventDocument"))
             {
-                this.ThenTheXmlEventOutputShouldBeValidXml();
+                Then("the xml event output should be valid XML");
             }
             var document = ScenarioContext.Current.Get<XDocument>("XmlEventDocument");
 
-            var nested = document.Elements(name).Elements(name);
+            var nested = document.Descendants(name).Descendants(name);
+            Assert.Empty(nested);
+        }
+
+        [Then(@"the xml event output should not have ""(.*)"" in the data")]
+        public void ThenTheXmlEventOutputShouldNotHaveInTheData(string text)
+        {
+            if (!ScenarioContext.Current.ContainsKey("XmlEventDocument"))
+            {
+                Then("the xml event output should be valid XML");
+            }
+            var document = ScenarioContext.Current.Get<XDocument>("XmlEventDocument");
+
+            var nested = document.Descendants("data").Where(e => e.Value.Contains(text)).ToList();
             Assert.Empty(nested);
         }
 

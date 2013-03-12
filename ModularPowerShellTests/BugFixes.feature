@@ -23,10 +23,13 @@ Scenario: String Objects
 	Then the xml event output should not include the length property
 	
 @string
+Scenario: Convert To Splunk Event Xml
 	Given I have a PowerShell job
 	And the script calls ConvertTo-Splunk
 	When I execute the job
+	When I call ConvertToString with the output string
 	Then the job should succeed and produce real data
 	Then the xml event output should be valid XML
 	Then the xml event output should not include the length property
 	Then the xml event output should not have nested event tags
+	Then the xml event output should not have "<event>" in the data

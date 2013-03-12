@@ -21,7 +21,7 @@ namespace Splunk.ModularInputs.Serialization
     {
         private readonly StringBuilder log = new StringBuilder();
 
-        private readonly Dictionary<string,List<object>> output = new Dictionary<string, List<object>>();
+        private readonly Dictionary<string, List<dynamic>> output = new Dictionary<string, List<dynamic>>();
 
         /// <summary>
         /// Gets the output buffers.
@@ -78,7 +78,7 @@ namespace Splunk.ModularInputs.Serialization
         {
             if (!this.output.ContainsKey(stanza))
             {
-                this.output.Add(stanza, new List<object>());
+                this.output.Add(stanza, new List<dynamic>());
             }
             this.output[stanza].Add(outputCollection);
         }
