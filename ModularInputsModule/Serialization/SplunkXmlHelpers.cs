@@ -7,13 +7,13 @@
 // Last Modified On : 12-18-2012
 // ***********************************************************************
 // <copyright file="SplunkXmlHelpers.cs" company="Splunk">
-//     Copyright (c) Splunk. All rights reserved.
+//     Copyright © 2013 by Splunk Inc., all rights reserved
 // </copyright>
 // <summary>
 //     Extension methods for XElement, etc.
 // </summary>
 // ***********************************************************************
-namespace Splunk.ModularInputs
+namespace Splunk.ModularInputs.Serialization
 {
     using System.Linq;
     using System.Xml.Linq;

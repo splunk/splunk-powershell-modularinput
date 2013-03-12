@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "App", "App\App.csproj", "{2
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularInputsModule", "ModularInputsModule\ModularInputsModule.csproj", "{4F443816-37C1-4B20-B243-0316BE559BA9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularPowerShell.Specs", "ModularPowerShellTests\ModularPowerShell.Specs.csproj", "{E1911F0E-2C1A-4419-A1A6-B4CF833551BF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,6 +44,12 @@ Global
 		{4F443816-37C1-4B20-B243-0316BE559BA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F443816-37C1-4B20-B243-0316BE559BA9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4F443816-37C1-4B20-B243-0316BE559BA9}.Release|x64.ActiveCfg = Release|Any CPU
+		{E1911F0E-2C1A-4419-A1A6-B4CF833551BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1911F0E-2C1A-4419-A1A6-B4CF833551BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1911F0E-2C1A-4419-A1A6-B4CF833551BF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E1911F0E-2C1A-4419-A1A6-B4CF833551BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1911F0E-2C1A-4419-A1A6-B4CF833551BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1911F0E-2C1A-4419-A1A6-B4CF833551BF}.Release|x64.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

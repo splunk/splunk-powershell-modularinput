@@ -1,0 +1,86 @@
+﻿// ***********************************************************************
+// Assembly         : ModularInputsModule
+// Author           : Joel Bennett
+// Created          : 03-11-2013
+//
+// Last Modified By : Joel Bennett
+// Last Modified On : 03-11-2013
+// ***********************************************************************
+// <copyright file="ObjectLogger.cs" company="Splunk">
+//     Copyright (c) 2013 by Splunk Inc., all rights reserved.
+// </copyright>
+// <summary>
+//   Defines the ObjectLogger.cs for ModularInputsModule in ModularPowerShell
+// </summary>
+namespace Splunk.ModularInputs.Serialization
+{
+    using System.Collections.Generic;
+    using System.Text;
+
+    public class ObjectLogger : BaseLogger
+    {
+        private readonly StringBuilder log = new StringBuilder();
+
+        private readonly Dictionary<string,List<object>> output = new Dictionary<string, List<object>>();
+
+        /// <summary>
+        /// Gets the output buffers.
+        /// </summary>
+        /// <value>The output.</value>
+        public Dictionary<string, List<object>> Output
+        {
+            get
+            {
+                return this.output;
+            }
+        }
+
+        /// <summary>
+        /// Gets the log contents
+        /// </summary>
+        /// <value>The log.</value>
+        public string Log
+        {
+            get
+            {
+                return this.log.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Clears the log and output from this instance.
+        /// </summary>
+        public void Clear()
+        {
+            this.output.Clear();
+            this.log.Clear();
+        }
+
+        /// <summary>
+        /// Stores the specified message in the log
+        /// </summary>
+        /// <param name="level">The log level</param>
+        /// <param name="format">A composite format string that contains text intermixed with zero or more format items</param>
+        /// <param name="args">An object array that contains 0 or more items to format</param>
+        public override void WriteLog(LogLevel level, string format, params object[] args)
+        {
+            this.log.AppendFormat("{0}: ", level);
+            this.log.AppendFormat(format, args);
+            this.log.AppendLine();
+        }
+
+        /// <summary>
+        /// Stores the objects in the output by stanza
+        /// </summary>
+        /// <param name="outputCollection">The PowerShell output</param>
+        /// <param name="stanza">The input stanza</param>
+        public override void WriteOutput(dynamic outputCollection, string stanza)
+        {
+            if (!this.output.ContainsKey(stanza))
+            {
+                this.output.Add(stanza, new List<object>());
+            }
+            this.output[stanza].Add(outputCollection);
+        }
+    }
+}

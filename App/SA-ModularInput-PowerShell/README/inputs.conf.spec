@@ -1,4 +1,4 @@
-[mipowershell://default]
+[powershell://default]
 *The name must be unique (and should be a valid filename)
 
 script = <command>

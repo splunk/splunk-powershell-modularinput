@@ -36,7 +36,8 @@ Besides the SPLUNK_HOME variable, there are several other environment variables 
 * SPLUNKPS\_SESSION\_KEY - the session key is the authentication token needed for accessing Splunk's REST API
 * SPLUNKPS\_SERVER\_URI - the URL which can be used to access Splunk's REST API
 * SPLUNKPS\_CHECKPOINT\_DIR - the location where splunk has us storing all checkpoint data
-* SPLUNKPS\_SERVER\_HOST 
+* SPLUNKPS\_SERVER\_HOST - the name of the splunk server that we have to talk to
+* SPLUNKPS\_INPUT\_NAME - the stanza name which defines this script
 
 ### Output
 

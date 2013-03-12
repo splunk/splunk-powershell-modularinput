@@ -13,23 +13,64 @@
       <param name="source">powershell</param>
       <param name="sourcetype">powershell_testing</param>
       <param name="script">Get-Module | Select-Object ModuleType, Name, Path, ExportedCommands</param>
-      <param name="schedule">0/15 * * ? * *</param>
+      <param name="schedule">0 * * ? * *</param>
     </stanza>
-    <stanza name="powershell://Testing2">
+    <stanza name="powershell://Count">
       <param name="host">retina</param>
       <param name="index">main</param>
       <param name="source">powershell</param>
       <param name="sourcetype">powershell_testing</param>
-
       <param name="script">
-        get-executionpolicy -list
-        # $Path = Get-LocalStoragePath
-        # [int]$Count = Import-LocalStorage -Name Count -Module Testing -Default 1
-        # $Count += 1
-        # New-Object PSObject -Prop @{ Name = "Testing"; Count = $Count; Storage = $Path }
-        # Export-LocalStorage -Name Count -Module Testing $Count
+        $Path = Get-LocalStoragePath
+        [int]$Count = Import-LocalStorage -Name Count -Module Testing -Default 1
+        $Count += 1
+        New-Object PSObject -Prop @{ Name = "Testing"; Count = $Count; Storage = $Path }
+        Export-LocalStorage -Name Count -Module Testing $Count
       </param>
       <param name="schedule">0/15 * * ? * *</param>
+    </stanza>
+    <stanza name="powershell://FiveMinutes">
+      <param name="host">retina</param>
+      <param name="index">main</param>
+      <param name="source">powershell</param>
+      <param name="sourcetype">powershell_sample</param>
+      <param name="script">
+        Get-ChildItem Env:\SPLUNK*
+      </param>
+      <param name="schedule">0 0/5 * ? * *</param>
+    </stanza>
+    <stanza name="powershell://BadCronString">
+      <param name="host">retina</param>
+      <param name="index">main</param>
+      <param name="source">powershell</param>
+      <param name="sourcetype">powershell_sample</param>
+      <param name="script">Write-Output "Greeting=`"Hello World`""</param>
+      <param name="schedule">* 60 * ? * *</param>
+    </stanza>
+    <stanza name="powershell://ErrorSample">
+      <param name="host">retina</param>
+      <param name="index">main</param>
+      <param name="source">powershell</param>
+      <param name="sourcetype">powershell_sample</param>
+      <param name="script">
+        $files = Get-ChildItem
+        $procs = Get-Process
+        $prob  = Get-ChildItem X:\FileDoesNotExist.Error
+        $files | Select-Object Mode, LastWriteTime, Length, FullName
+      </param>
+      <param name="schedule">5 * * ? * *</param>
+    </stanza>
+    <stanza name="powershell://BadXmlSample">
+      <param name="host">retina</param>
+      <param name="index">main</param>
+      <param name="source">powershell</param>
+      <param name="sourcetype">powershell_sample</param>
+      <param name="script">
+        <![CDATA[
+        Write-Output "My friend draws cats like this: <o.<o"
+        ]]>
+        </param>
+      <param name="schedule">5 * * ? * *</param>
     </stanza>
   </configuration>
 </input>
