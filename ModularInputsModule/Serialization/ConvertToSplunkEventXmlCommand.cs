@@ -34,14 +34,14 @@ namespace Splunk.ModularInputs.Serialization
         /// <summary>
         /// Gets or sets the InputObject to be output
         /// </summary>
-        [Parameter(Mandatory = true, Position = 0, ValueFromPipeline = true)]
+        [Parameter(Mandatory = true, ValueFromPipeline = true)]
         public PSObject InputObject { get; set; }
 
         /// <summary>
         /// Gets or sets the list of properties that we want to output
         /// </summary>
         /// <value>The property names.</value>
-        [Parameter]
+        [Parameter(Position = 1)]
         public HashSet<string> Property { get; set; }
 
         /// <summary>
@@ -50,6 +50,14 @@ namespace Splunk.ModularInputs.Serialization
         [Parameter]
         public SwitchParameter AsXml { get; set; }
 
+        protected override void BeginProcessing()
+        {
+            if (string.IsNullOrEmpty(Stanza))
+            {
+                Stanza = System.Environment.GetEnvironmentVariable("SPLUNKPS_INPUT_NAME");
+            }
+            base.BeginProcessing();
+        }
 
         /// <summary>
         /// Processes the record (get's called once for each object in the pipeline output).
