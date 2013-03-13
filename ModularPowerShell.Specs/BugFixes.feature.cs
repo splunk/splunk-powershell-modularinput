@@ -135,10 +135,10 @@ this.ScenarioSetup(scenarioInfo);
         
         [Xunit.FactAttribute()]
         [Xunit.TraitAttribute("FeatureTitle", "BugFixes")]
-        [Xunit.TraitAttribute("Description", "Convert To Splunk Event Xml")]
-        public virtual void ConvertToSplunkEventXml()
+        [Xunit.TraitAttribute("Description", "Outputting XML Should Encode it")]
+        public virtual void OutputtingXMLShouldEncodeIt()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Convert To Splunk Event Xml", new string[] {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Outputting XML Should Encode it", new string[] {
                         "string"});
 #line 26
 this.ScenarioSetup(scenarioInfo);
@@ -159,7 +159,29 @@ this.ScenarioSetup(scenarioInfo);
 #line 34
  testRunner.Then("the xml event output should not have nested event tags", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 35
- testRunner.Then("the xml event output should not have \"<event>\" in the data", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("the xml event output should have \"<event>\" in the data", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Xunit.FactAttribute()]
+        [Xunit.TraitAttribute("FeatureTitle", "BugFixes")]
+        [Xunit.TraitAttribute("Description", "Convert To Splunk Event Xml Should Mark it PreFormattedf")]
+        public virtual void ConvertToSplunkEventXmlShouldMarkItPreFormattedf()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Convert To Splunk Event Xml Should Mark it PreFormattedf", ((string[])(null)));
+#line 37
+this.ScenarioSetup(scenarioInfo);
+#line 38
+ testRunner.Given("I have a PowerShell job", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 39
+ testRunner.And("the script calls ConvertTo-Splunk", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line 40
+ testRunner.When("I execute the job", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 41
+ testRunner.Then("the job should succeed and produce real data", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 42
+ testRunner.Then("the output should have a SplunkPreFormatted property on it", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

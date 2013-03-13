@@ -23,7 +23,7 @@ Scenario: String Objects
 	Then the xml event output should not include the length property
 	
 @string
-Scenario: Convert To Splunk Event Xml
+Scenario: Outputting XML Should Encode it
 	Given I have a PowerShell job
 	And the script calls ConvertTo-Splunk
 	When I execute the job
@@ -32,4 +32,11 @@ Scenario: Convert To Splunk Event Xml
 	Then the xml event output should be valid XML
 	Then the xml event output should not include the length property
 	Then the xml event output should not have nested event tags
-	Then the xml event output should not have "<event>" in the data
+	Then the xml event output should have "<event>" in the data
+
+Scenario: Convert To Splunk Event Xml Should Mark it PreFormattedf
+	Given I have a PowerShell job
+	And the script calls ConvertTo-Splunk
+	When I execute the job
+	Then the job should succeed and produce real data
+	Then the output should have a SplunkPreFormatted property on it

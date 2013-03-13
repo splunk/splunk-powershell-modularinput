@@ -14,7 +14,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "App", "App\App.csproj", "{2
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularInputsModule", "ModularInputsModule\ModularInputsModule.csproj", "{4F443816-37C1-4B20-B243-0316BE559BA9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularPowerShell.Specs", "ModularPowerShellTests\ModularPowerShell.Specs.csproj", "{E1911F0E-2C1A-4419-A1A6-B4CF833551BF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularPowerShell.Specs", "ModularPowerShell.Specs\ModularPowerShell.Specs.csproj", "{E1911F0E-2C1A-4419-A1A6-B4CF833551BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

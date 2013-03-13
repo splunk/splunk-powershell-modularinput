@@ -135,5 +135,25 @@ namespace ModularPowerShell.Specs
             Assert.Empty(nested);
         }
 
+        [Then(@"the xml event output should have ""(.*)"" in the data")]
+        public void ThenTheXmlEventOutputShouldHaveInTheData(string text)
+        {
+            if (!ScenarioContext.Current.ContainsKey("XmlEventDocument"))
+            {
+                Then("the xml event output should be valid XML");
+            }
+            var document = ScenarioContext.Current.Get<XDocument>("XmlEventDocument");
+
+            var nested = document.Descendants("data").Where(e => e.Value.Contains(text)).ToList();
+            Assert.NotEmpty(nested);
+        }
+
+        [Then(@"the output should have a SplunkPreFormatted property on it")]
+        public void ThenTheOutputShouldHaveASplunkPreFormattedPropertyOnIt()
+        {
+            var output = ScenarioContext.Current.Get<ObjectLogger>("OutputLog").Output["Test"];
+            Assert.True(output.First().SplunkPreFormatted);
+        }
+
     }
 }
