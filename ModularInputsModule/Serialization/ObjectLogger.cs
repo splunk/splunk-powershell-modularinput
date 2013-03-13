@@ -27,7 +27,7 @@ namespace Splunk.ModularInputs.Serialization
         /// Gets the output buffers.
         /// </summary>
         /// <value>The output.</value>
-        public Dictionary<string, List<object>> Output
+        public Dictionary<string, List<dynamic>> Output
         {
             get
             {

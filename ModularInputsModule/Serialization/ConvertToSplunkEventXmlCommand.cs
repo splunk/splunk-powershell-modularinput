@@ -65,7 +65,9 @@ namespace Splunk.ModularInputs.Serialization
         protected override void ProcessRecord()
         {
             var output = XmlFormatter.ConvertToString(this.InputObject, this.Stanza, this.Property);
-            this.WriteObject(output);
+            var psOutput = new PSObject(output);
+            psOutput.Properties.Add(new PSNoteProperty("SplunkPreFormatted", true));
+            this.WriteObject(psOutput);
             base.ProcessRecord();
         }
     }

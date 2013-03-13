@@ -57,6 +57,22 @@ namespace Splunk.ModularInputs.Serialization
         /// <param name="stanza">The input stanza</param>
         public override void WriteOutput(dynamic output, string stanza)
         {
+            var pOutput = output as PSObject;
+            if (pOutput != null && pOutput.BaseObject is string && pOutput.Properties.Match("SplunkPreFormatted").Count > 0)
+            {
+                try
+                {
+                    if (output.SplunkPreFormatted)
+                    {
+                        this.WriteLog(LogLevel.Output, (string)pOutput.BaseObject);
+                        return;
+                    }
+                }
+                // ReSharper disable EmptyGeneralCatchClause
+                catch { }
+                // ReSharper restore EmptyGeneralCatchClause
+            }
+
             this.WriteLog(LogLevel.Output, XmlFormatter.ConvertToString(output, stanza));
         }
     }
