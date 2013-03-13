@@ -1,9 +1,14 @@
 Modular Input for PowerShell
 ============================
 
-A PowerShell mini host: miPowerShell.exe which is compatible with Splunk's Modular Input schema, with XML streaming output and --scheme parsing, etc.
+The Modular Input for PowerShell (MIPoSh) provides a single-instance multi-threaded host mini host
+which actually implements a [Splunk "Modular Input" ](http://docs.splunk.com/Documentation/Splunk/latest/AdvancedDev/ModInputsIntro), 
+supporting schema, XML configuration vis stdin, and XML streaming output, etc.
 
-The Modular Input for PowerShell provides a single-instance multi-threaded host, so many PowerShell stanzas can be defined and even run simultaneously, and the output will go to the correct indexes with source and sourcetypes defined. It also provides scheduling so that the scripts for those stanzas can be run on a recurring schedule with the full complexity and power of cron scheduling.
+It's multithreaded, so many PowerShell stanzas can be defined and even run simultaneously, 
+and the output will go to the correct indexes with source and sourcetypes defined.
+It also provides scheduling so that the scripts for those stanzas can be run on a 
+recurring schedule with the full complexity and power of cron scheduling.
 
 It defines a modular input stanza type for "powershell" which can be used in your inputs.conf like this:
 
@@ -14,22 +19,46 @@ It defines a modular input stanza type for "powershell" which can be used in you
     source=powershell
     sourcetype=PowerShell:RunningProcesses
 
-See the [inputs.conf.spec]() for more information. Note that the schedule uses regular cron syntax and is provided by Quartz Task Scheduler. The specified script will be executed based on the cron schedule, and output will be streamed in xml format.
+See the [inputs.conf.spec]() for more information. 
+Note that the schedule uses regular [cron syntax](http://quartznet.sourceforge.net/tutorial/lesson_6.html)
+and our scheduling is done using the [Quartz.Net Task Scheduler](http://quartznet.sourceforge.net/).
 
-The host automatically converts all output to key="value" format based on public properties, and packages the output inside <data> tags and <event> tags for Splunk's use. Note: it currently requires that output objects not have any script properties.
+The host automatically converts all output to key="value" format based on public properties,
+and packages the output inside <data> tags and <event> tags for Splunk's use.
+Note: it currently requires that output objects not have any script properties.
 
+Requirements
+------------
 
-Writing Scripts for miPowerShell
---------------------------------
+* MIPoSh requires PowerShell 3. 
+This means it also requires .Net 4 (or higher), and will only run on platforms supported by PowerShell 3: Windows Server 2008 and Vista or newer (Windows 7, Server 2008 R2, Server 2012, Windows 8).
 
-When writing scripts for miPowerShell, there are a few key issues. Since this is a single-instance modular input, all scripts are being run within the same process, so the "current working directory" ($pwd) is set to the Modular Input's home.  However, the Splunk_Home envrionment variable is set, so you can easily address scripts in your specific TA by writing paths like this:
+Writing Scripts for Modular Inputs
+----------------------------------
+
+When writing scripts for MIPosh, there are a quite a few differences from scripts you might normally run in PowerShell.
+There is no actual host provided, so you shouldn't refer to $host or use Write-Host or Out-Host. 
+Everything you want output should go to either Write-Output or Write-Error.
+
+Since MIPoSh is a single-instance host running many scripts on schedules, 
+all of the scripts are being run within the same process, 
+and environment variables like the "current working directory" are shared between scripts.
+
+### Specifying Paths
+
+When running as a Modular Input (invoked by Splunk), the SPLUNK_HOME environment variable is set, 
+so you can easily address scripts in your specific TA by writing paths like this:
 
     [powershell://MSExchange_Health]
     script=${Env:SPLUNK_HOME}/etc/apps/TA-Exchange-2010/powershell/health.ps1
 
-The miPowerShell TA for splunk includes a PowerShell Module called [LocalStorage](https://github.com/splunk/splunk-powershell-modularinput/tree/master/ModularPowerShell/Modules/LocalStorage) which exposes three cmdlets: Get-LocalStoragePath, Export-LocalStorage, and Import-LocalStorage. These cmdlets write by default to the splunk checkpoint dir for your input, and can be used to persist PowerShell objects as state between scheduled runs of your script (since nothing else should persist).
+The Modular PowerShell TA for Splunk includes a PowerShell Module called [LocalStorage](https://github.com/splunk/splunk-powershell-modularinput/tree/master/ModularPowerShell/Modules/LocalStorage) 
+which exposes three cmdlets: Get-LocalStoragePath, Export-LocalStorage, and Import-LocalStorage. 
+These cmdlets write by default to the splunk checkpoint directory for your input, 
+and can be used to persist PowerShell objects as state between scheduled runs of your script 
+(since nothing else should persist from one invocation to the next).
 
-Besides the SPLUNK_HOME variable, there are several other environment variables which you should be aware of. In particular:
+Besides the SPLUNK_HOME variable, there are several other environment variables which you may use. In particular:
 
 * SPLUNK\_SERVER\_NAME - the name configured for this machine to use when reporting data to Splunk
 * SPLUNK\_HOME - the root directory for splunk's installed location (useful for appending /etc/apps/ paths to)
@@ -41,16 +70,36 @@ Besides the SPLUNK_HOME variable, there are several other environment variables 
 
 ### Output
 
-All properties on any objects that are output by your script will be converted to key="value" strings and output for Splunk (wrapped in data/event/stream tags). There are a few property names, however, which have special significance in miPowerShell output, and allow you to override the defaults defined in the input.conf stanza by providing them:
+MIPoSh doesn't process the output until your pipeline and runspace are finished.
+This means we don't process script properties, and it also means that you should avoid long-running scripts.
+Particularly, you should not write scripts which wait for things to happe unless you exit every time there is output.
+It also means that all of your output essentially has the same time stamp, unless you override it (see below).
 
-* SplunkIndex
-* SplunkSource
-* SplunkHost
-* SplunkSourceType
-* SplunkTime
+Each object that is output by your script is turned into an "event" in Splunk, and wrapped in <event> and <data> tags.
+The properties of each object will be converted to key="value" strings, 
+but the value can only be a quoted string, so it will be converted simply by calling .ToString(), 
+which means the output must be simple, and complex nested objects should be flattened in your script before being output.
 
-Typically the way to add those would be as calculated expressions with Select-Object or Add-Member.
+There are a few special property names which have significance for Splunk Modular Inputs, and allow you to
+override the defaults defined in the input.conf stanza.  They are:
+
+* SplunkIndex - Overrides the index that the output will be stored in
+* SplunkSource - Overrides the "source" for the ouput
+* SplunkHost - Overrides the "host" name for the output
+* SplunkSourceType - Overrides the "sourcetype" for the output
+* SplunkTime - Overrides the "time" -- if you don't specify this, all objects output by your script in a single execution will get roughly the same timestamp, because they're held for output until the script execution is finished, and then marked with the output time.
+
+These properties will never show up in the key="value" output.
+
+NOTE: If you wish to set these properties and override the defaults, you should either use a calculated expressions with Select-Object or use Add-Member to add a NoteProperty.
 
 ### Testing
 
-Trying to test these scripts to verify how they run in miPowerShell can be a bit tricky if you have to involve all of Splunk, so I added a --input parameter which accepts the xml that Splunk would normally send us a file path instead. Thus, if you take the [sample_input.xml](https://github.com/splunk/splunk-powershell-modularinput/blob/master/ModularPowerShell/sample_input.xml) and pass it's path to miPowerShell.exe you should see it set up and start to run the script(s) on the specified schedule(s).
+Trying to test these scripts to verify how they run in MIPoSh can be a bit tricky 
+if you have to involve all of Splunk, so I added a 
+--input parameter which will accept the path to an xml file with the stanza configuration. 
+Normally Splunk would stream this XML to the modular input (and you can do that too).
+
+For example, if you take the [sample_input.xml](https://github.com/splunk/splunk-powershell-modularinput/blob/master/ModularPowerShell/sample_input.xml) 
+and pass it's path to the Modular Input PowerShell.exe, you should see it set up and start to run the example script(s) on the specified schedule(s).
+

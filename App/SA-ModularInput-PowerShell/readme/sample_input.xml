@@ -27,50 +27,17 @@
         New-Object PSObject -Prop @{ Name = "Testing"; Count = $Count; Storage = $Path }
         Export-LocalStorage -Name Count -Module Testing $Count
       </param>
-      <param name="schedule">0/15 * * ? * *</param>
+      <param name="schedule">1/15 * * ? * *</param>
     </stanza>
-    <stanza name="powershell://FiveMinutes">
+    <stanza name="powershell://EveryFiveMinutes">
       <param name="host">retina</param>
       <param name="index">main</param>
       <param name="source">powershell</param>
       <param name="sourcetype">powershell_sample</param>
       <param name="script">
-        Get-ChildItem Env:\SPLUNK*
+        Get-ChildItem Env:\SPLUNK* | ConvertTo-SplunkEventXml Name, Value
       </param>
-      <param name="schedule">0 0/5 * ? * *</param>
-    </stanza>
-    <stanza name="powershell://BadCronString">
-      <param name="host">retina</param>
-      <param name="index">main</param>
-      <param name="source">powershell</param>
-      <param name="sourcetype">powershell_sample</param>
-      <param name="script">Write-Output "Greeting=`"Hello World`""</param>
-      <param name="schedule">* 60 * ? * *</param>
-    </stanza>
-    <stanza name="powershell://ErrorSample">
-      <param name="host">retina</param>
-      <param name="index">main</param>
-      <param name="source">powershell</param>
-      <param name="sourcetype">powershell_sample</param>
-      <param name="script">
-        $files = Get-ChildItem
-        $procs = Get-Process
-        $prob  = Get-ChildItem X:\FileDoesNotExist.Error
-        $files | Select-Object Mode, LastWriteTime, Length, FullName
-      </param>
-      <param name="schedule">5 * * ? * *</param>
-    </stanza>
-    <stanza name="powershell://BadXmlSample">
-      <param name="host">retina</param>
-      <param name="index">main</param>
-      <param name="source">powershell</param>
-      <param name="sourcetype">powershell_sample</param>
-      <param name="script">
-        <![CDATA[
-        Write-Output "My friend draws cats like this: <o.<o"
-        ]]>
-        </param>
-      <param name="schedule">5 * * ? * *</param>
+      <param name="schedule">* 0/5 * ? * *</param>
     </stanza>
   </configuration>
 </input>
