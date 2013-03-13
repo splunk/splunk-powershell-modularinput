@@ -16,6 +16,7 @@ namespace Splunk.ModularInputs
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Xml.Linq;
 
     using Quartz;
@@ -110,11 +111,16 @@ namespace Splunk.ModularInputs
             {
                 try
                 {
+                    // get the hostname part of the powershell://stanza
+                    var name = stanza.Attribute("name").Value;
+                    var uri = new Uri(name);
+                    name = uri.Host;
+
                     var job = JobBuilder.Create<PowerShellJob>()
                                         .UsingJobData("script", stanza.GetParameterValue("script"))
                                         .UsingJobData("ILogger", typeof(ConsoleLogger).AssemblyQualifiedName)
                                         .UsingJobData("PSModulePath", psModulePath)
-                                        .WithIdentity(stanza.Attribute("name").Value)
+                                        .WithIdentity( name )
                                         .Build();
                     var trigger = TriggerBuilder.Create()
                                                 .WithSchedule(CronScheduleBuilder.CronSchedule(stanza.GetParameterValue("schedule")))
