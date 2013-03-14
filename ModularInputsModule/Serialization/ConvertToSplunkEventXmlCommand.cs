@@ -22,7 +22,7 @@ namespace Splunk.ModularInputs.Serialization
     /// Handles formatting for Splunk XML streaming
     /// </summary>
     [Cmdlet(VerbsData.ConvertTo, "SplunkEventXml")]
-    public class ConvertToSplunkEventXmlCommand : Cmdlet
+    public class ConvertToSplunkEventXmlCommand : PSCmdlet
     {
         /// <summary>
         /// Gets or sets the stanza name for the &lt;event&gt; output.
@@ -54,7 +54,7 @@ namespace Splunk.ModularInputs.Serialization
         {
             if (string.IsNullOrEmpty(Stanza))
             {
-                Stanza = System.Environment.GetEnvironmentVariable("SPLUNKPS_INPUT_NAME");
+                Stanza = (string)GetVariableValue("SplunkStanzaName");
             }
             base.BeginProcessing();
         }
@@ -64,10 +64,19 @@ namespace Splunk.ModularInputs.Serialization
         /// </summary>
         protected override void ProcessRecord()
         {
-            var output = XmlFormatter.ConvertToString(this.InputObject, this.Stanza, this.Property);
-            var psOutput = new PSObject(output);
-            psOutput.Properties.Add(new PSNoteProperty("SplunkPreFormatted", true));
-            this.WriteObject(psOutput);
+            var output = this.AsXml ? 
+                XmlFormatter.ConvertToXml(this.InputObject, this.Stanza, this.Property) : 
+                XmlFormatter.ConvertToString(this.InputObject, this.Property, false);
+
+            if (AsXml)
+            {
+                var psOutput = new PSObject(output);
+                psOutput.Properties.Add(new PSNoteProperty("SplunkPreFormatted", true));
+                this.WriteObject(psOutput);
+            }
+            else this.WriteObject(output);
+
+
             base.ProcessRecord();
         }
     }

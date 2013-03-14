@@ -4,7 +4,7 @@
 	I want to execute PowerShell Scripts
 
 @mytag
-Scenario: Global Variables
+Scenario: Global variables should be available in script
 	Given I add ReadOnly variables:
 		| Variable | Value    | Description     |
 		| Super    | Duper    | Superman        |

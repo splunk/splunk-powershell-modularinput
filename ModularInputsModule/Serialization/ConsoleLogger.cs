@@ -73,7 +73,7 @@ namespace Splunk.ModularInputs.Serialization
                 // ReSharper restore EmptyGeneralCatchClause
             }
 
-            this.WriteLog(LogLevel.Output, XmlFormatter.ConvertToString(output, stanza));
+            this.WriteLog(LogLevel.Output, XmlFormatter.ConvertToXml(output, stanza));
         }
     }
 }

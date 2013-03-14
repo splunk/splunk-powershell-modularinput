@@ -25,9 +25,9 @@
         [int]$Count = Import-LocalStorage Count -Default 1
         $Target = $Count + 10
         while($Count -lt $Target) {
-        $Count += 1
-        New-Object PSObject -Prop @{ Name = $SplunkStanzaName; Count = $Count; Storage = $Path }
-        Start-Sleep -Sec 1
+          $Count += 1
+          New-Object PSObject -Prop @{ Name = $SplunkStanzaName; Count = $Count; Storage = $Path }
+          Start-Sleep -Sec 1
         }
         Export-LocalStorage Count $Count
       </param>

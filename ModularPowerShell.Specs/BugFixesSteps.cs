@@ -49,11 +49,11 @@
             ScenarioContext.Current.Get<ObjectLogger>("OutputLog").WriteOutput(new PSObject("Hello World"), "Test");
         }
 
-        [When(@"I call ConvertToString with the output string")]
+        [When(@"I call ConvertToXml with the output string")]
         public void WhenICallConvertToString()
         {
             var output = ScenarioContext.Current.Get<ObjectLogger>("OutputLog").Output["Test"];
-            var xml = XmlFormatter.ConvertToString(output.First() as PSObject);
+            var xml = XmlFormatter.ConvertToXml(output.First() as PSObject, "Test");
             ScenarioContext.Current.Add("XmlEventString", xml);
         }
 
@@ -120,7 +120,7 @@
         public void ThenTheOutputShouldHaveASplunkPreFormattedPropertyOnIt()
         {
             var output = ScenarioContext.Current.Get<ObjectLogger>("OutputLog").Output["Test"];
-            Assert.True(output.First().SplunkPreFormatted);
+            Assert.True(((dynamic)output.First()).SplunkPreFormatted);
         }
 
     }

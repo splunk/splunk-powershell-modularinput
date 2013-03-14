@@ -73,7 +73,22 @@ namespace Splunk.ModularInputs.Serialization
         /// <param name="stanza">A name to use for the stanza attribute</param>
         /// <param name="properties">The names of the properties to output</param>
         /// <returns>A string representation of the object.</returns>
-        public static string ConvertToString(PSObject output, string stanza = null, HashSet<string> properties = null)
+        public static string ConvertToXml(PSObject output, string stanza, HashSet<string> properties = null)
+        {
+            // wrap the whole thing inside an event tag
+            return "<event" + (string.IsNullOrEmpty(stanza) ? ">" : " stanza=\"" + stanza + "\">") +
+                         ConvertToString(output, properties, true) +
+                   "</event>\n";
+        }
+
+        /// <summary>
+        /// Gets a Name="Value"; representation of the data without the &lt;event&gt; xml wrapper
+        /// </summary>
+        /// <param name="output">The output.</param>
+        /// <param name="properties">The properties.</param>
+        /// <param name="addMetadata">if set to <c>true</c>, add the metadata and encapsulate everything in xml.</param>
+        /// <returns>System.String.</returns>
+        public static string ConvertToString(PSObject output, HashSet<string> properties, bool addMetadata)
         {
             // If they pass in a property list, make sure it has all the ReservedProperties in it:
             if (properties != null)
@@ -100,12 +115,7 @@ namespace Splunk.ModularInputs.Serialization
                 values = FilterNameValueObjects(output.Properties, properties);
             }
 
-            string data = KeyValuePairs(values, output.BaseObject as string);
-
-            // wrap the whole thing inside an event tag
-            return "<event" + (string.IsNullOrEmpty(stanza) ? ">" : " stanza=\"" + stanza + "\">") +
-                         data +
-                   "</event>\n";
+            return KeyValuePairs(values, output.BaseObject as string, !addMetadata);
         }
 
         /// <summary>
@@ -171,8 +181,9 @@ namespace Splunk.ModularInputs.Serialization
         /// </summary>
         /// <param name="objects">The key/value pairs.</param>
         /// <param name="content">Extra content to be embedded below the object output</param>
+        /// <param name="rawTextOnly">If set, outputs only the key=value data, with no XML metadata and no encoding</param>
         /// <returns>The string representation of the objects</returns>
-        private static string KeyValuePairs(IEnumerable<dynamic> objects, string content = "")
+        private static string KeyValuePairs(IEnumerable<dynamic> objects, string content = "", bool rawTextOnly = false)
         {
             bool hasTime = false;
             var meta = new StringBuilder();
@@ -251,8 +262,7 @@ namespace Splunk.ModularInputs.Serialization
                 data.Append(content);
             }
 
-
-
+            if (rawTextOnly) { return data.ToString(); }
             return meta.ToString() + "<data>" + SecurityElement.Escape(data.ToString()) + "</data>";
         }
     }

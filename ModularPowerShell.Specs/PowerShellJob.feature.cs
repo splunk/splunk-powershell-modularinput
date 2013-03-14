@@ -75,10 +75,10 @@ namespace ModularPowerShell.Specs
         
         [Xunit.FactAttribute()]
         [Xunit.TraitAttribute("FeatureTitle", "PowerShellJob")]
-        [Xunit.TraitAttribute("Description", "Global Variables")]
-        public virtual void GlobalVariables()
+        [Xunit.TraitAttribute("Description", "Global variables should be available in script")]
+        public virtual void GlobalVariablesShouldBeAvailableInScript()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Global Variables", new string[] {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Global variables should be available in script", new string[] {
                         "mytag"});
 #line 7
 this.ScenarioSetup(scenarioInfo);
