@@ -22,13 +22,28 @@
       <param name="sourcetype">powershell_testing</param>
       <param name="script">
         $Path = Get-LocalStoragePath
-        [int]$Count = Import-LocalStorage -Name Count -Module Testing -Default 1
+        [int]$Count = Import-LocalStorage Count -Default 1
+        $Target = $Count + 10
+        while($Count -lt $Target) {
         $Count += 1
-        New-Object PSObject -Prop @{ Name = "Testing"; Count = $Count; Storage = $Path }
-        Export-LocalStorage -Name Count -Module Testing $Count
+        New-Object PSObject -Prop @{ Name = $SplunkStanzaName; Count = $Count; Storage = $Path }
+        Start-Sleep -Sec 1
+        }
+        Export-LocalStorage Count $Count
       </param>
       <param name="schedule">0/15 * * ? * *</param>
     </stanza>
+    <stanza name="powershell://VariableReport">
+      <param name="host">retina</param>
+      <param name="index">main</param>
+      <param name="source">powershell</param>
+      <param name="sourcetype">powershell_testing</param>
+      <param name="script">
+        Get-Variable Splunk*
+        Get-ChildItem Env:\Splunk*
+      </param>
+      <param name="schedule">3 * * ? * *</param>
+    </stanza>    
     <stanza name="powershell://BadCronString">
       <param name="host">retina</param>
       <param name="index">main</param>
@@ -37,20 +52,19 @@
       <param name="script">Write-Output "Greeting=`"Hello World`""</param>
       <param name="schedule">* 60 * ? * *</param>
     </stanza>
-    <stanza name="powershell://ErrorSample">
+    <stanza name="powershell://ScriptError">
       <param name="host">retina</param>
       <param name="index">main</param>
       <param name="source">powershell</param>
       <param name="sourcetype">powershell_sample</param>
       <param name="script">
-        $files = Get-ChildItem
-        $procs = Get-Process
+        $files = Get-ChildItem | Select -First 3
         $prob  = Get-ChildItem X:\FileDoesNotExist.Error
         $files | Select-Object Mode, LastWriteTime, Length, FullName
       </param>
-      <param name="schedule">5 * * ? * *</param>
+      <param name="schedule">30 * * ? * *</param>
     </stanza>
-    <stanza name="powershell://BadXmlSample">
+    <stanza name="powershell://ScaryXmlSample">
       <param name="host">retina</param>
       <param name="index">main</param>
       <param name="source">powershell</param>

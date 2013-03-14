@@ -44,29 +44,29 @@ Since MIPoSh is a single-instance host running many scripts on schedules,
 all of the scripts are being run within the same process, 
 and environment variables like the "current working directory" are shared between scripts.
 
+The Modular PowerShell TA for Splunk includes a PowerShell Module called [LocalStorage](https://github.com/splunk/splunk-powershell-modularinput/tree/master/ModularPowerShell/Modules/LocalStorage) 
+which is pre-loaded for you, and exposes three cmdlets: Get-LocalStoragePath, Export-LocalStorage, and Import-LocalStorage. 
+These cmdlets use the splunk checkpoint directory and allow you to persist 
+key-value pairs of data between scheduled runs of your script 
+(since nothing else will persist from one invocation to the next).
+
 ### Specifying Paths
 
-When running as a Modular Input (invoked by Splunk), the SPLUNK_HOME environment variable is set, 
+When running as a Modular Input (invoked by Splunk), the SplunkHome variable is set, 
 so you can easily address scripts in your specific TA by writing paths like this:
 
     [powershell://MSExchange_Health]
-    script=${Env:SPLUNK_HOME}/etc/apps/TA-Exchange-2010/powershell/health.ps1
+    script=$SplunkHome/etc/apps/TA-Exchange-2010/powershell/health.ps1
 
-The Modular PowerShell TA for Splunk includes a PowerShell Module called [LocalStorage](https://github.com/splunk/splunk-powershell-modularinput/tree/master/ModularPowerShell/Modules/LocalStorage) 
-which exposes three cmdlets: Get-LocalStoragePath, Export-LocalStorage, and Import-LocalStorage. 
-These cmdlets write by default to the splunk checkpoint directory for your input, 
-and can be used to persist PowerShell objects as state between scheduled runs of your script 
-(since nothing else should persist from one invocation to the next).
+Besides $SplunkHome, there are several other read-only constant variables:
 
-Besides the SPLUNK_HOME variable, there are several other environment variables which you may use. In particular:
-
-* SPLUNK\_SERVER\_NAME - the name configured for this machine to use when reporting data to Splunk
-* SPLUNK\_HOME - the root directory for splunk's installed location (useful for appending /etc/apps/ paths to)
-* SPLUNKPS\_SESSION\_KEY - the session key is the authentication token needed for accessing Splunk's REST API
-* SPLUNKPS\_SERVER\_URI - the URL which can be used to access Splunk's REST API
-* SPLUNKPS\_CHECKPOINT\_DIR - the location where splunk has us storing all checkpoint data
-* SPLUNKPS\_SERVER\_HOST - the name of the splunk server that we have to talk to
-* SPLUNKPS\_INPUT\_NAME - the stanza name which defines this script
+* SplunkHome - the root directory for splunk's installed location (useful for appending /etc/apps/ paths to)
+* SplunkServerName - the name configured for this machine to use in events
+* SplunkServerUri - the address of Splunk's REST API
+* SplunkSessionKey - the session key is the authentication token needed for accessing Splunk's REST API
+* SplunkCheckpointPath - the path for storing persistent state
+* SplunkServerHost - the name of the splunk server that we have to talk to
+* SplunkStanzaName -  the name of the inputs.conf stanza that defined this script
 
 ### Output
 

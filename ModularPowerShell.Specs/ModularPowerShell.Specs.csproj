@@ -71,6 +71,12 @@
       <DependentUpon>CronParsing.feature</DependentUpon>
     </Compile>
     <Compile Include="CronParsingSteps.cs" />
+    <Compile Include="PowerShellJob.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>PowerShellJob.feature</DependentUpon>
+    </Compile>
+    <Compile Include="PowerShellJobSteps.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -84,6 +90,10 @@
       <LastGenOutput>CronParsing.feature.cs</LastGenOutput>
     </None>
     <None Include="packages.config" />
+    <None Include="PowerShellJob.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>PowerShellJob.feature.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ModularInputsModule\ModularInputsModule.csproj">

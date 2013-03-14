@@ -1,7 +1,4 @@
-﻿using System;
-using TechTalk.SpecFlow;
-
-namespace ModularPowerShell.Specs
+﻿namespace ModularPowerShell.Specs
 {
     using System.IO;
     using System.Linq;
@@ -12,52 +9,23 @@ namespace ModularPowerShell.Specs
     using Splunk.ModularInputs;
     using Splunk.ModularInputs.Serialization;
 
+    using TechTalk.SpecFlow;
     using Xunit;
 
     [Binding]
     public class BugFixesSteps : Steps
     {
-        [Given(@"I have a PowerShell job")]
-        public void GivenIHaveAPowerShellJob()
-        {
-            Given("I have an Object Logger");
-            var powerShellJob = new PowerShellJob
-            {
-                Logger = ScenarioContext.Current.Get<ILogger>("OutputLog")
-            };
-            ScenarioContext.Current.Add("PowerShellJob", powerShellJob);
-        }
-
-        [Given(@"I have an Object Logger")]
-        public void GivenIHaveAnObjectLogger()
-        {
-            var objectLogger = new ObjectLogger();
-            ScenarioContext.Current.Add("OutputLog", objectLogger);
-        }
-
         [Given(@"the script outputs nulls \(intermixed with real data\)")]
         public void GivenTheScriptOutputsNullsIntermixedWithRealData()
         {
             ScenarioContext.Current.Add("PowerShellScript","Write-Output @($null,'Test Data', $null, $(Get-Item .))");
         }
         
-        [Given(@"the script outputs a string")]
-        public void GivenTheScriptOutputsAString()
-        {
-            ScenarioContext.Current.Add("PowerShellScript", "Write-Output \"Hello ${Env:UserName}\"");
-        }
-
-        [Given(@"the script calls ConvertTo-Splunk")]
-        public void GivenTheScriptCallsConvertToSplunk()
-        {
-            ScenarioContext.Current.Add("PowerShellScript", "\"Hello ${Env:UserName}\" | ConvertTo-SplunkEventXml");
-        }
-        
         [When(@"I execute the job")]
         public void WhenIExecuteTheJob()
         {
             var script = ScenarioContext.Current.Get<string>("PowerShellScript");
-            ScenarioContext.Current.Get<PowerShellJob>("PowerShellJob").Execute(script, "Test");
+            ScenarioContext.Current.Get<PowerShellJob>("PowerShellJob").Execute(PowerShellJob.Iss, script, "Test");
         }
 
         [Then(@"the job should succeed and produce real data")]

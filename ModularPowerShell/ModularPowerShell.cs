@@ -16,7 +16,6 @@ namespace Splunk.ModularInputs
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Xml.Linq;
 
     using Quartz;
@@ -29,28 +28,6 @@ namespace Splunk.ModularInputs
         public ModularPowerShell(XElement input, ILogger logger)
         {
             this.Logger = logger;
-
-            // Set environment variables:
-            XElement setting;
-            if ((setting = input.Element("server_host")) != null)
-            {
-                Environment.SetEnvironmentVariable("SPLUNKPS_SERVER_HOST", setting.Value);
-            }
-
-            if ((setting = input.Element("server_uri")) != null)
-            {
-                Environment.SetEnvironmentVariable("SPLUNKPS_SERVER_URI", setting.Value);
-            }
-
-            if ((setting = input.Element("session_key")) != null)
-            {
-                Environment.SetEnvironmentVariable("SPLUNKPS_SESSION_KEY", setting.Value);
-            }
-
-            if ((setting = input.Element("checkpoint_dir")) != null)
-            {
-                Environment.SetEnvironmentVariable("SPLUNKPS_CHECKPOINT_DIR", setting.Value);
-            }
 
             // Initialize output
             this.Logger.WriteLog(LogLevel.Output, "<stream>");
@@ -107,6 +84,8 @@ namespace Splunk.ModularInputs
             // Workaround a bug in PowerShell which voids the PSModulePath
             var psModulePath = Environment.GetEnvironmentVariable("PSModulePath");
 
+            AddGlobalVariables(inputXml);
+
             foreach (XElement stanza in inputXml.Descendants("stanza"))
             {
                 try
@@ -120,13 +99,14 @@ namespace Splunk.ModularInputs
                                         .UsingJobData("script", stanza.GetParameterValue("script"))
                                         .UsingJobData("ILogger", typeof(ConsoleLogger).AssemblyQualifiedName)
                                         .UsingJobData("PSModulePath", psModulePath)
-                                        .WithIdentity( name )
-                                        .Build();
+                                        .UsingJobData("SplunkStanzaName", name)
+                                        .WithIdentity( name );
+
                     var trigger = TriggerBuilder.Create()
                                                 .WithSchedule(CronScheduleBuilder.CronSchedule(stanza.GetParameterValue("schedule")))
                                                 .StartNow()
                                                 .Build();
-                    parsedJobs.Add(job, new Quartz.Collection.HashSet<ITrigger>(new[] { trigger }));
+                    parsedJobs.Add(job.Build(), new Quartz.Collection.HashSet<ITrigger>(new[] { trigger }));
                 }
                 catch (Exception ex)
                 {
@@ -141,6 +121,41 @@ namespace Splunk.ModularInputs
             }
 
             return parsedJobs;
+        }
+
+        /// <summary>
+        /// Loads the global settings from the input xml.
+        /// </summary>
+        /// <param name="inputXml">The input XML.</param>
+        /// <returns>StringDictionary.</returns>
+        private static void AddGlobalVariables(XContainer inputXml)
+        {
+            var splunkSettings = new List<Tuple<string,string,string>>();
+            XElement setting;
+
+            if ((setting = inputXml.Element("server_host")) != null)
+            {
+                splunkSettings.Add(new Tuple<string, string, string>("SplunkServerHost",setting.Value, "The Splunk server hostname"));
+            }
+
+            if ((setting = inputXml.Element("server_uri")) != null)
+            {
+                splunkSettings.Add(new Tuple<string, string, string>("SplunkServerUri",setting.Value, "The Splunk server REST uri"));
+            }
+
+            if ((setting = inputXml.Element("session_key")) != null)
+            {
+                splunkSettings.Add(new Tuple<string, string, string>("SplunkSessionKey",setting.Value, "The Splunk REST API key"));
+            }
+
+            if ((setting = inputXml.Element("checkpoint_dir")) != null)
+            {
+                splunkSettings.Add(new Tuple<string, string, string>("SplunkCheckpointPath",setting.Value, "The path for storing persistent state"));
+            }
+
+            splunkSettings.Add(new Tuple<string, string, string>("SplunkHome", Environment.GetEnvironmentVariable("SPLUNK_HOME"), "The Splunk install root"));
+            splunkSettings.Add(new Tuple<string, string, string>("SplunkServerName", Environment.GetEnvironmentVariable("SPLUNK_SERVER_NAME"), "The registered name of this Splunk server"));
+            PowerShellJob.AddReadOnlyVariables(splunkSettings);
         }
     }
 }

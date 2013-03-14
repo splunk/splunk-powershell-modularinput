@@ -101,9 +101,9 @@ this.ScenarioSetup(scenarioInfo);
 #line 12
 this.ScenarioSetup(scenarioInfo);
 #line 13
- testRunner.Given("I have a PowerShell job", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("I have a PowerShell Job with an Object Logger", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 14
- testRunner.And("the script outputs nulls (intermixed with real data)", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("my script is \"Write-Output @($null,\'Test Data\', $null, $(Get-Item .))\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 15
  testRunner.When("I execute the job", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 16
@@ -143,9 +143,9 @@ this.ScenarioSetup(scenarioInfo);
 #line 26
 this.ScenarioSetup(scenarioInfo);
 #line 27
- testRunner.Given("I have a PowerShell job", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("I have a PowerShell Job with an Object Logger", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 28
- testRunner.And("the script calls ConvertTo-Splunk", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("my script is \"\"Hello ${Env:UserName}\" | ConvertTo-SplunkEventXml\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 29
  testRunner.When("I execute the job", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 30
@@ -166,16 +166,16 @@ this.ScenarioSetup(scenarioInfo);
         
         [Xunit.FactAttribute()]
         [Xunit.TraitAttribute("FeatureTitle", "BugFixes")]
-        [Xunit.TraitAttribute("Description", "Convert To Splunk Event Xml Should Mark it PreFormattedf")]
-        public virtual void ConvertToSplunkEventXmlShouldMarkItPreFormattedf()
+        [Xunit.TraitAttribute("Description", "Convert To Splunk Event Xml Should Mark it PreFormatted")]
+        public virtual void ConvertToSplunkEventXmlShouldMarkItPreFormatted()
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Convert To Splunk Event Xml Should Mark it PreFormattedf", ((string[])(null)));
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Convert To Splunk Event Xml Should Mark it PreFormatted", ((string[])(null)));
 #line 37
 this.ScenarioSetup(scenarioInfo);
 #line 38
- testRunner.Given("I have a PowerShell job", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("I have a PowerShell Job with an Object Logger", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 39
- testRunner.And("the script calls ConvertTo-Splunk", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("my script is \"\"Something\" | ConvertTo-SplunkEventXml\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 40
  testRunner.When("I execute the job", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 41

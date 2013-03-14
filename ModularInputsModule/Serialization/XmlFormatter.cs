@@ -183,7 +183,7 @@ namespace Splunk.ModularInputs.Serialization
             // TODO: if we're in use as a cmdlet, we have a runspace, and can process Script Properties            
             foreach (dynamic property in objects)
             {
-                string name;
+                string name, value = string.Empty;
 
                 try
                 {
@@ -194,7 +194,17 @@ namespace Splunk.ModularInputs.Serialization
                     name = property.Key;
                 }
 
-                string value = property.Value.ToString();
+                try
+                {
+                    if (property.Value != null)
+                    {
+                        value = property.Value.ToString();
+                    }
+                }
+                catch
+                {
+                    value = string.Empty;
+                }
 
                 // Handle special property names
                 if (ReservedProperties.Contains(name))
