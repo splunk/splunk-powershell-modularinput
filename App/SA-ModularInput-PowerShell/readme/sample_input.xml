@@ -35,7 +35,7 @@
       <param name="source">powershell</param>
       <param name="sourcetype">powershell_sample</param>
       <param name="script">
-        Get-ChildItem Env:\SPLUNK* | ConvertTo-SplunkEventXml Name, Value
+        Get-ChildItem Env:\SPLUNK* | ConvertTo-KeyValueString Name, Value
       </param>
       <param name="schedule">* 0/5 * ? * *</param>
     </stanza>

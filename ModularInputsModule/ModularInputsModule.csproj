@@ -63,7 +63,7 @@
     <Compile Include="PowerShellJob.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SessionStateHelper.cs" />
-    <Compile Include="Serialization\ConvertToSplunkEventXmlCommand.cs" />
+    <Compile Include="Serialization\ConvertToKeyValueStringCommand.cs" />
     <Compile Include="Serialization\ConsoleLogger.cs" />
     <Compile Include="Serialization\SplunkXmlHelpers.cs" />
     <Compile Include="Serialization\XmlFormatter.cs" />

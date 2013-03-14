@@ -145,11 +145,11 @@ this.ScenarioSetup(scenarioInfo);
 #line 27
  testRunner.Given("I have a PowerShell Job with an Object Logger", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 28
- testRunner.And("my script is \"\"Hello ${Env:UserName}\" | ConvertTo-SplunkEventXml -AsXml\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("my script is \"\"Hello ${Env:UserName}\" | ConvertTo-KeyValueString -AsEventXml\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 29
  testRunner.When("I execute the job", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 30
- testRunner.When("I call ConvertToXml with the output string", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.And("I call ConvertToXml with the output string", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 31
  testRunner.Then("the job should succeed and produce real data", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 32
@@ -175,7 +175,7 @@ this.ScenarioSetup(scenarioInfo);
 #line 38
  testRunner.Given("I have a PowerShell Job with an Object Logger", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 39
- testRunner.And("my script is \"\"Something\" | ConvertTo-SplunkEventXml -AsXml\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("my script is \"\"Something\" | ConvertTo-KeyValueString -AsEventXml\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 40
  testRunner.When("I execute the job", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 41

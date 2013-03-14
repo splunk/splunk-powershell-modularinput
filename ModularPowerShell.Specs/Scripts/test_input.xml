@@ -71,7 +71,7 @@
       <param name="sourcetype">powershell_sample</param>
       <param name="script">
         <![CDATA[
-        Write-Output "My friend draws cats like this: <o.<o" | ConvertTo-SplunkEventXml
+        Write-Output "My friend draws cats like this: <o.<o" | ConvertTo-KeyValueString
         ]]>
         </param>
       <param name="schedule">5 * * ? * *</param>

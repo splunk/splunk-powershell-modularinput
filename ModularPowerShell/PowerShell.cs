@@ -105,8 +105,6 @@ namespace Splunk.ModularInputs
         /// </summary>
         private static void WriteScheme()
         {
-            // ConvertToSplunkEventXmlCommand.Write(LogLevel.INFO, "Dumping Scheme to STDOUT");
-
             // Write out the XML
             Console.WriteLine(
                 new XDocument(
@@ -134,7 +132,7 @@ namespace Splunk.ModularInputs
                                     "arg",
                                     new XAttribute("name", "schedule"),
                                     new XElement("title", "Cron Schedule"),
-                                    new XElement("description", "A cron string specifying the schedule for execution.")))))));
+                                    new XElement("description", "A cron string specifying the schedule for execution: seconds minutes hours days-of-month month days-of-week years (like: 0 0/5 * ? * * )")))))));
 
             Environment.Exit(0);
         }

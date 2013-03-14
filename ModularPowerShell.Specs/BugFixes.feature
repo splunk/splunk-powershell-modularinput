@@ -25,9 +25,9 @@ Scenario: String Objects
 @string
 Scenario: Outputting XML Should Encode it
 	Given I have a PowerShell Job with an Object Logger
-	And my script is ""Hello ${Env:UserName}" | ConvertTo-SplunkEventXml -AsXml"
+	And my script is ""Hello ${Env:UserName}" | ConvertTo-KeyValueString -AsEventXml"
 	When I execute the job
-	When I call ConvertToXml with the output string
+	And I call ConvertToXml with the output string
 	Then the job should succeed and produce real data
 	And the xml event output should be valid XML
 	And the xml event output should not include the length property
@@ -36,7 +36,7 @@ Scenario: Outputting XML Should Encode it
 
 Scenario: Convert To Splunk Event Xml Should Mark it PreFormatted
 	Given I have a PowerShell Job with an Object Logger
-	And my script is ""Something" | ConvertTo-SplunkEventXml -AsXml"
+	And my script is ""Something" | ConvertTo-KeyValueString -AsEventXml"
 	When I execute the job
 	Then the job should succeed and produce real data
 	And the output should have a SplunkPreFormatted property on it

@@ -52,7 +52,8 @@
         [When(@"I call ConvertToXml with the output string")]
         public void WhenICallConvertToString()
         {
-            var output = ScenarioContext.Current.Get<ObjectLogger>("OutputLog").Output["Test"];
+            var logger = ScenarioContext.Current.Get<ObjectLogger>("OutputLog");
+            var output = logger.Output["Test"];
             var xml = XmlFormatter.ConvertToXml(output.First() as PSObject, "Test");
             ScenarioContext.Current.Add("XmlEventString", xml);
         }

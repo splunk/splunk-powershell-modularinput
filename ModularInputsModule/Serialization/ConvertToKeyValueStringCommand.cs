@@ -6,11 +6,11 @@
 // Last Modified By : Joel Bennett
 // Last Modified On : 12-18-2012
 // ***********************************************************************
-// <copyright file="ConvertToSplunkEventXmlCommand.cs" company="Splunk">
+// <copyright file="ConvertToKeyValueStringCommand.cs" company="Splunk">
 //     Copyright © 2012, 2013 by Splunk Inc., all rights reserved
 // </copyright>
 // <summary>
-//    Defines the ConvertToSplunkEventXmlCommand class which handles formatting for Splunk XML output streaming
+//    Defines the ConvertToKeyValueStringCommand class which handles formatting for Splunk XML output streaming
 // </summary>
 // ***********************************************************************
 namespace Splunk.ModularInputs.Serialization
@@ -21,14 +21,14 @@ namespace Splunk.ModularInputs.Serialization
     /// <summary>
     /// Handles formatting for Splunk XML streaming
     /// </summary>
-    [Cmdlet(VerbsData.ConvertTo, "SplunkEventXml")]
-    public class ConvertToSplunkEventXmlCommand : PSCmdlet
+    [Cmdlet(VerbsData.ConvertTo, "KeyValueString")]
+    public class ConvertToKeyValueStringCommand : PSCmdlet
     {
         /// <summary>
         /// Gets or sets the stanza name for the &lt;event&gt; output.
         /// </summary>
         /// <returns>The stanza name</returns>
-        [Parameter]
+        [Parameter(ParameterSetName = "AsXml")]
         public string Stanza { get; set; }
 
         /// <summary>
@@ -47,8 +47,9 @@ namespace Splunk.ModularInputs.Serialization
         /// <summary>
         /// Gets or sets the value of AsXml to control whether the output is wrapped in event tags.
         /// </summary>
-        [Parameter]
-        public SwitchParameter AsXml { get; set; }
+        [Parameter(ParameterSetName = "AsXml")]
+        [Alias("AsXml")]
+        public SwitchParameter AsEventXml { get; set; }
 
         protected override void BeginProcessing()
         {
@@ -64,11 +65,11 @@ namespace Splunk.ModularInputs.Serialization
         /// </summary>
         protected override void ProcessRecord()
         {
-            var output = this.AsXml ? 
+            var output = this.AsEventXml ? 
                 XmlFormatter.ConvertToXml(this.InputObject, this.Stanza, this.Property) : 
                 XmlFormatter.ConvertToString(this.InputObject, this.Property, false);
 
-            if (AsXml)
+            if (AsEventXml)
             {
                 var psOutput = new PSObject(output);
                 psOutput.Properties.Add(new PSNoteProperty("SplunkPreFormatted", true));
