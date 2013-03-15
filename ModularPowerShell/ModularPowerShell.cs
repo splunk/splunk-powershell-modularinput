@@ -100,7 +100,7 @@ namespace Splunk.ModularInputs
                                         .UsingJobData("ILogger", typeof(ConsoleLogger).AssemblyQualifiedName)
                                         .UsingJobData("PSModulePath", psModulePath)
                                         .UsingJobData("SplunkStanzaName", name)
-                                        .WithIdentity( name );
+                                        .WithIdentity(stanza.Attribute("name").Value);
 
                     var trigger = TriggerBuilder.Create()
                                                 .WithSchedule(CronScheduleBuilder.CronSchedule(stanza.GetParameterValue("schedule")))
