@@ -65,9 +65,7 @@
     <Content Include="SA-ModularInput-PowerShell\appserver\static\appIcon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SA-ModularInput-PowerShell\appserver\static\appIcon.xcf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="SA-ModularInput-PowerShell\appserver\static\appIcon.xcf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ModularPowerShell\ModularPowerShell.csproj">
