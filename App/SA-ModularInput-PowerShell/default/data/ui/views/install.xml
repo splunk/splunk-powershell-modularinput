@@ -1,0 +1,160 @@
+﻿<dashboard>
+  <label>Installation</label>
+  <row>
+    <html>
+      <h1>Splunk Add-on for PowerShell</h1>
+
+      <p>Welcome to the Splunk Add-on for PowerShell.  This Add-on provides the 
+      ability to run PowerShell scripts for the purpose of gathering data from 
+      Windows systems.  It does this by registering a new type "powershell" to
+      the list of accepted data inputs that you can configure</p>
+
+      <h2>Pre-Requisites</h2>
+
+      <p>Before using the Splunk Add-on for PowerShell, the systems to be monitored
+      must have PowerShell 3.0 (which is part of the Windows Management Framework) 
+      and the .NET Framework 4.5 installed.  In addition, the Splunk Universal Forwarder 
+      v5.0.2 or later must be used.</p>
+
+      <p>You can download PowerShell 3.0 and the .NET Framework 4.5 directly from 
+      Microsoft using the links below:</p>
+
+      <ul>
+        <li>
+          <a href="http://www.microsoft.com/en-us/download/details.aspx?id=34595">Windows Management Framework 3.0</a>
+        </li>
+        <li>
+          <a href="http://www.microsoft.com/en-us/download/details.aspx?id=30653">.NET Framework 4.5</a>
+        </li>
+      </ul>
+
+      <h2>Installing the Add-on</h2>
+
+      <p>Before using a powershell data input, you must deploy the SA-ModInput-PowerShell app
+      on each Windows host that you will gather data from.  The best method of doing this is 
+      to use the Splunk Deployment Server.  To do this:</p>
+
+      <ol>
+        <li>Unpack the SA-ModInput-PowerShell app into $SPLUNK_HOME/etc/deployment-apps</li>
+        <li>Create a suitable serverclass.conf file in $SPLUNK_HOME/etc/system/local</li>
+        <li>Restart the splunk server to start the deployment server</li>
+        <li>Configure your Windows hosts with a deploymentclient.conf</li>
+      </ol>
+
+      <p>A serverclass.conf file snippet for deploying the SA-ModInput-PowerShell app is shown
+      below:</p>
+
+      <code>
+        <pre>
+          [serverClass:powershell]
+          whitelist.0 = *
+          machineTypesFilter = windows-*
+          restartSplunkd = true
+
+          [serverClass:powershell:app:SA-ModInput-PowerShell]
+        </pre>
+      </code>
+
+      <p>For more information regarding using the deployment server to manage your Splunk
+      Universal Forwarders, refer to the <a href="http://docs.splunk.com/Documentation/Splunk/latest/Deploy/Distributedoverview">Distributed 
+      Deployment Guide</a>.</p>
+
+      <h2>Configuring the Add-on</h2>
+
+      <p>Once the add-on is deployed to the Splunk Universal Forwarders, you can configure
+      PowerShell inputs using stanzas in the inputs.conf file.  You can also use the Splunk
+      Manager on a full Splunk installation.  The following is an example stanza:</p>
+
+      <code>
+        <pre>
+          [powershell://Example_PowerShell_Script]
+          script = Get-Service | Select Name,DisplayName,Status
+          schedule = 0 */5 * ? * *
+          sourcetype = PowerShell:Services
+        </pre>
+      </code>
+
+      <p>As you can see, the script is in-line.  To put the script in a ps1 file, you can use
+      dot-sourcing, as follows:</p>
+
+      <code>
+        <pre>
+          script = . "${env:SPLUNK_HOME}\etc\apps\MyApp\bin\myscript.ps1"
+        </pre>
+      </code>
+
+      <p>The schedule is a standard cron-style schedule.  The seven fields are:</p>
+
+      <ul>
+        <li>Seconds</li>
+        <li>Minutes</li>
+        <li>Hours</li>
+        <li>Day of Month</li>
+        <li>Month</li>
+        <li>Day of Week</li>
+        <li>Year (optional)</li>
+      </ul>
+
+      <p>For a full reference to the syntax, please refer to the 
+      <a href="http://quartznet.sourceforge.net/tutorial/lesson_6.html">Quartz.NET documentation</a>.</p>
+
+      <p>By default, events are created with a source/sourcetype of powershell in the main index.</p>
+
+      <h2>Notable Items</h2>
+
+      <p>Any objects that are returned from the script are converted to semantic key-value pairs by converting
+      each property using the ToString() modifier.  If a property cannot be converted to a string via the 
+      ToString() method, it is skipped.</p>
+
+      <p>Several PowerShell variables are made available to scripts.  These include the following specific to the
+      SA-ModInput-PowerShell environment:</p>
+
+      <ul>
+        <li>
+          <b>SplunkHome</b> - the root directory for Splunks installed location
+        </li>
+        <li>
+          <b>SplunkServerName</b> - the name configured for this machine to use in events
+        </li>
+        <li>
+          <b>SplunkServerUri</b> - the base URI of Splunks REST API
+        </li>
+        <li>
+          <b>SplunkSessionKey</b> - the authentication token needed for accessing Splunks REST API
+        </li>
+        <li>
+          <b>SplunkCheckpointPath</b> - a directory for storing persistent state
+        </li>
+        <li>
+          <b>SplunkServerHost</b> - the name of the Splunk server that we are talking to
+        </li>
+        <li>
+          <b>SplunkStanzaName</b> - the name of the inputs.conf stanza
+        </li>
+      </ul>
+
+      <p>Note: The PowerShell Modular Input does not produce any output until your script is complete.
+      This has considerations for how events are created.  Ideally, create objects with a <em>SplunkTime</em>
+      property as this will become the time for that event. If you do not do this, then all events will
+      be created with the current time.  Other special properties include:</p>
+
+      <ul>
+        <li>
+          <b>SplunkIndex</b> - Overrides the index in which the output will be stored
+        </li>
+        <li>
+          <b>SplunkSource</b> - Overrides the "source" for the ouput
+        </li>
+        <li>
+          <b>SplunkHost</b> - Overrides the "host" name for the output
+        </li>
+        <li>
+          <b>SplunkSourceType</b> - Overrides the "sourcetype" for the output
+        </li>
+        <li>
+          <b>SplunkTime</b> - Overrides the "time"
+        </li>
+      </ul>
+    </html>
+  </row>
+</dashboard>
