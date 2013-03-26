@@ -21,7 +21,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\Output\Debug\</OutputPath>
+    <OutputPath>..\Output\Debug</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -30,7 +30,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\Output\Release\</OutputPath>
+    <OutputPath>..\Output\Release</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -92,7 +92,7 @@
        
        *** That means that building produces output. ***
 
-       To fix that, stop Build from calling CopyFilesToOutputDirectory, and only copy:
+       To fix that, we stop the Build from calling CopyFilesToOutputDirectory, and only copy:
         _CopyFilesMarkedCopyLocal - the ProjectReference
         _CopySourceItemsToOutputDirectory - the "Content" items above
 
@@ -106,7 +106,20 @@
       AfterBuild;
     </BuildDependsOn>
   </PropertyGroup>
+  <PropertyGroup>
+    <MSBuildCommunityTasksPath>$(SolutionDir)\packages\MSBuildTasks.1.4.0.56\tools</MSBuildCommunityTasksPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ZipFiles Include="$(OutputPath)**\*.*" Exclude="@(DefaultExclude)" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.targets" />
   <Target Name="AfterBuild">
-    <!-- put .tar.gz command here. Target: $(OutDir)\SA-ModularInput-PowerShell -->
+    <Zip Files="@(ZipFiles)" WorkingDirectory="$(OutputPath)" ZipFileName="$(OutputPath)SA-ModularInput-PowerShell.tar.gz" />
   </Target>
 </Project>

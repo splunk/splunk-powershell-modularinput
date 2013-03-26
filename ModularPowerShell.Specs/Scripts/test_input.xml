@@ -52,6 +52,21 @@
       <param name="script">Write-Output "Greeting=`"Hello World`""</param>
       <param name="schedule">* 60 * ? * *</param>
     </stanza>
+    <stanza name="powershell://AppendProperty">
+      <param name="host">retina</param>
+      <param name="index">main</param>
+      <param name="source">powershell</param>
+      <param name="sourcetype">powershell_sample</param>
+      <param name="script">
+        Get-Module -List | Select-Object -First 1 ModuleType, Name, Path, ExportedCommands,
+        @{Name="SplunkIndex"; Expression={"Main"}},
+        @{Name="SplunkSource"; Expression={"PowerShell:Source"}},
+        @{Name="SplunkHost"; Expression={"PowerShell:Host"}},
+        @{Name="SplunkSourceType"; Expression={"PowerShell:Type"}},
+        @{Name="SplunkTime"; Expression={(Get-Date).AddDays(-1)}}
+      </param>
+      <param name="schedule">1 * * ? * *</param>
+    </stanza>
     <stanza name="powershell://ScriptError">
       <param name="host">retina</param>
       <param name="index">main</param>
