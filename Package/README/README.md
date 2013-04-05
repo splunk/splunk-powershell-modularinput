@@ -1,7 +1,7 @@
 Modular Input for PowerShell
 ============================
 
-The Modular Input for PowerShell (MIPoSh) provides a single-instance multi-threaded host mini host
+The Modular Input for PowerShell is the core of the **Splunk Add-on for PowerShell** and provides a single-instance multi-threaded host mini host
 which actually implements a [Splunk "Modular Input" ](http://docs.splunk.com/Documentation/Splunk/latest/AdvancedDev/ModInputsIntro), 
 supporting schema, XML configuration vis stdin, and XML streaming output, etc.
 
@@ -27,24 +27,31 @@ The host automatically converts all output to key="value" format based on public
 and packages the output inside <data> tags and <event> tags for Splunk's use.
 Note: it currently requires that output objects not have any script properties.
 
-Requirements
+Building
 ------------
 
-* MIPoSh requires PowerShell 3. 
+To build the modular input you need to:
+
+* Allow NuGet to download missing packages during build.  (This is an option in Visual Studio's Options, under "Package Manager").
+* Run the build.ps1 script in the root directory.
+
+### Note: The Modular Input for PowerShell requires PowerShell 3.
+
 This means it also requires .Net 4 (or higher), and will only run on platforms supported by PowerShell 3: Windows Server 2008 and Vista or newer (Windows 7, Server 2008 R2, Server 2012, Windows 8).
 
 Writing Scripts for Modular Inputs
 ----------------------------------
 
-When writing scripts for MIPosh, there are a quite a few differences from scripts you might normally run in PowerShell.
+When writing scripts for the **Splunk Add-on for PowerShell**,
+there are a quite a few differences from scripts you might normally run in PowerShell.
 There is no actual host provided, so you shouldn't refer to $host or use Write-Host or Out-Host. 
 Everything you want output should go to either Write-Output or Write-Error.
 
-Since MIPoSh is a single-instance host running many scripts on schedules, 
+Since the Modular Input for PowerShell is a single-instance host running many scripts on schedules, 
 all of the scripts are being run within the same process, 
 and environment variables like the "current working directory" are shared between scripts.
 
-The Modular PowerShell TA for Splunk includes a PowerShell Module called [LocalStorage](https://github.com/splunk/splunk-powershell-modularinput/tree/master/ModularPowerShell/Modules/LocalStorage) 
+The **Splunk Add-on for PowerShell** also includes a PowerShell Module called [LocalStorage](https://github.com/splunk/splunk-powershell-modularinput/tree/master/Package/windows_x86/bin/Modules/LocalStorage) 
 which is pre-loaded for you, and exposes three cmdlets: Get-LocalStoragePath, Export-LocalStorage, and Import-LocalStorage. 
 These cmdlets use the splunk checkpoint directory and allow you to persist 
 key-value pairs of data between scheduled runs of your script 
@@ -70,8 +77,8 @@ Besides $SplunkHome, there are several other read-only constant variables:
 
 ### Output
 
-MIPoSh doesn't process the output until your pipeline and runspace are finished.
-This means we don't process script properties, and it also means that you should avoid long-running scripts.
+NOTE: the Modular Input currently does not process the output of your scripts until your pipeline and runspace are finished.
+This means we don't process ScriptProperty values, and it also means that you should avoid long-running scripts.
 Particularly, you should not write scripts which wait for things to happe unless you exit every time there is output.
 It also means that all of your output essentially has the same time stamp, unless you override it (see below).
 
@@ -95,11 +102,11 @@ NOTE: If you wish to set these properties and override the defaults, you should 
 
 ### Testing
 
-Trying to test these scripts to verify how they run in MIPoSh can be a bit tricky 
-if you have to involve all of Splunk, so I added a 
+Trying to test these scripts to verify how they run in our Modular Input for PowerShell can be a bit tricky 
+if you have to involve all of Splunk and the scheduling, so I added a 
 --input parameter which will accept the path to an xml file with the stanza configuration. 
 Normally Splunk would stream this XML to the modular input (and you can do that too).
 
-For example, if you take the [sample_input.xml](https://github.com/splunk/splunk-powershell-modularinput/blob/master/ModularPowerShell/sample_input.xml) 
+For example, if you take the [sample_input.xml](https://github.com/splunk/splunk-powershell-modularinput/blob/master/Package/README/sample_input.xml) 
 and pass it's path to the Modular Input PowerShell.exe, you should see it set up and start to run the example script(s) on the specified schedule(s).
 
