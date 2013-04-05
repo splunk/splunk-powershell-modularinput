@@ -27,15 +27,10 @@ The host automatically converts all output to key="value" format based on public
 and packages the output inside <data> tags and <event> tags for Splunk's use.
 Note: it currently requires that output objects not have any script properties.
 
-Building
+Dependencies
 ------------
 
-To build the modular input you need to:
-
-* Allow NuGet to download missing packages during build.  (This is an option in Visual Studio's Options, under "Package Manager").
-* Run the build.ps1 script in the root directory.
-
-### Note: The Modular Input for PowerShell requires PowerShell 3.
+### The Modular Input for PowerShell requires PowerShell 3.
 
 This means it also requires .Net 4 (or higher), and will only run on platforms supported by PowerShell 3: Windows Server 2008 and Vista or newer (Windows 7, Server 2008 R2, Server 2012, Windows 8).
 
