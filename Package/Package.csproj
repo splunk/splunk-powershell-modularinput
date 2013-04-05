@@ -143,7 +143,7 @@
   <!-- These depend on files that are in a solution-level folder .7zip (like .nuget) -->
   <PropertyGroup>
     <SevenZipPath>$(SolutionDir).nuget\7za.exe</SevenZipPath>
-    <PublishPath Condition="$(PublishPath) == ''">$(OutputPath)..\SA-ModularInput-PowerShell.tar.gz</PublishPath>
+    <PublishPath Condition="$(PublishPath) == ''">$(OutputPath)..\$(AssemblyName).tar.gz</PublishPath>
     <Files Condition="$(Files) == ''">$(OutputPath)\..\*</Files>
     <!-- See http://msdn.microsoft.com/en-us/magazine/dd419659.aspx#id0090093 -->
     <CleanDependsOn>CleanPublish;$(CleanDependsOn);</CleanDependsOn>
