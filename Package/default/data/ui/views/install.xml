@@ -1,7 +1,7 @@
 ﻿<dashboard>
   <label>Installation</label>
   <row>
-    <html><![CDATA[
+    <html>
 <h1>Splunk Add-on for PowerShell</h1>
 
 <p>The Splunk Add-on for PowerShell provides a single-instance multi-threaded 
@@ -135,7 +135,7 @@ specifying a script in inputs.conf and within your script:</p>
 <h3>Output</h3>
 <p>The Splunk Add-on for PowerShell does not process the output until your pipeline and runspace are finished.  This means it does not process script properties.  You should also avoid long-running scripts.  Particularly, you should not write scripts that wait for things to happen unless you exit every time there is output.  All output has the same time stamp unless you override it (see below).</p>
 <p>Each object that is output by your script is turned into an event in Splunk.  The properties of each object will be converted to key="value" strings.  The value is always a quoted script and will be converted by calling .ToString() on the property.  This generally means the output must be simple and complex nested objects should be flattened within your script.</p>
-<>There are a few special property names which have significance for the event and allow you to override the defaults defined in the inputs.conf stanza:</p>
+<p>There are a few special property names which have significance for the event and allow you to override the defaults defined in the inputs.conf stanza:</p>
 <ul>
 <li><b>SplunkIndex</b> - Overrides the index that the output will be stored in</li>
 <li><b>SplunkSourc</b>  - Overrides the "source" for the ouput</li>
@@ -149,6 +149,6 @@ specifying a script in inputs.conf and within your script:</p>
 <p><b>NOTE</b>: If you wish to set these properties and override the defaults, you should either use a calculated expressions with Select-Object or use Add-Member to add a NoteProperty.</p>
 
 
-    ]]></html>
+    </html>
   </row>
 </dashboard>
