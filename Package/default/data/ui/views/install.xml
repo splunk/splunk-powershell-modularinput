@@ -1,7 +1,7 @@
 ﻿<dashboard>
   <label>Installation</label>
   <row>
-    <html>
+    <html><![CDATA[
 <h1>Splunk Add-on for PowerShell</h1>
 
 <p>The Splunk Add-on for PowerShell provides a single-instance multi-threaded 
@@ -149,6 +149,6 @@ specifying a script in inputs.conf and within your script:</p>
 <p><b>NOTE</b>: If you wish to set these properties and override the defaults, you should either use a calculated expressions with Select-Object or use Add-Member to add a NoteProperty.</p>
 
 
-    </html>
+    ]]></html>
   </row>
 </dashboard>

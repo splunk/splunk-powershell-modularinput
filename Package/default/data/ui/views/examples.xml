@@ -1,18 +1,18 @@
 ﻿<dashboard>
   <label>Examples</label>
   <row>
-    <html>
+    <html><![CDATA[
       <h2>Example 1: Log all processes with additional information</h2>
 
       <p>The following inputs.conf example logs an event per process every 5 minutes using the sourcetype "Windows:Process".</p>
       <code>
         <pre>
           [powershell://Processes]
-          script = Get-Process | | Select-Object Handles, NPM, PM, WS, VM, Id, ProcessName, @{n="SplunkHost";e={$Env:SPLUNK_SERVER_NAME}}
+          script = Get-Process | Select-Object Handles, NPM, PM, WS, VM, Id, ProcessName, @{n="SplunkHost";e={$Env:SPLUNK_SERVER_NAME}}
           schedule = 0 */5 * ? * *
           sourcetype = Windows:Process
         </pre>
       </code>
-    </html>
+    ]]></html>
   </row>
 </dashboard>
