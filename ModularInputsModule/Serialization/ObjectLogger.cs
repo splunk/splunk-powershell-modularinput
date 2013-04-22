@@ -17,6 +17,8 @@ namespace Splunk.ModularInputs.Serialization
     using System.Collections.Generic;
     using System.Text;
 
+    using Common.Logging;
+
     public class ObjectLogger : BaseLogger
     {
         private readonly StringBuilder log = new StringBuilder();

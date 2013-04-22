@@ -17,13 +17,14 @@ namespace Splunk.ModularInputs
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.Specialized;
     using System.IO;
     using System.Management.Automation;
     using System.Management.Automation.Runspaces;
     using System.Reflection;
 
     using Microsoft.Practices.Unity;
+
+    using Common.Logging;
 
     using Quartz;
 

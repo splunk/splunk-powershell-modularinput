@@ -13,6 +13,7 @@
 // ***********************************************************************
 namespace Splunk.ModularInputs.Serialization
 {
+    using Common.Logging;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -23,6 +24,9 @@ namespace Splunk.ModularInputs.Serialization
     /// </summary>
     public class ConsoleLogger : BaseLogger
     {
+        private readonly ILog debugLog = LogManager.GetLogger("debug");
+        private readonly ILog outputLog = LogManager.GetLogger("output");
+
         /// <summary>
         /// Convenience method to write log messages to splunkd.log
         /// </summary>
@@ -31,22 +35,33 @@ namespace Splunk.ModularInputs.Serialization
         /// <param name="args">An object array that contains 0 or more items to format</param>
         public override void WriteLog(LogLevel level, string format, params object[] args)
         {
-            if (args.Length > 0)
+            switch (level)
             {
-                format = string.Format(format, args);
-            }
-
-            Debug.WriteLine("{0} s=\"PowerShell\" {1}", level.ToString().ToUpper(), format);
-
-            if (level > LogLevel.Output)
-            {
-                Console.Error.WriteLine("{0} {1}", level.ToString().ToUpper(), format);
-                Console.Error.Flush();
-            }
-            else
-            {
-                Console.Out.WriteLine(format);
-                Console.Out.Flush();
+                case LogLevel.All:
+                    outputLog.TraceFormat(format, args);
+                    break;
+                case LogLevel.Trace:
+                    outputLog.TraceFormat(format, args);
+                    break;
+                case LogLevel.Debug:
+                    debugLog.DebugFormat(format, args);
+                    break;
+                case LogLevel.Info:
+                    debugLog.InfoFormat(format, args);
+                    break;
+                case LogLevel.Warn:
+                    debugLog.WarnFormat(format, args);
+                    break;
+                case LogLevel.Error:
+                    debugLog.ErrorFormat(format, args);
+                    break;
+                case LogLevel.Fatal:
+                    debugLog.FatalFormat(format, args);
+                    break;
+                case LogLevel.Off:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("level");
             }
         }
 
@@ -64,7 +79,7 @@ namespace Splunk.ModularInputs.Serialization
                 {
                     if (output.SplunkPreFormatted)
                     {
-                        this.WriteLog(LogLevel.Output, (string)pOutput.BaseObject);
+                        outputLog.Trace((string)pOutput.BaseObject);
                         return;
                     }
                 }
@@ -72,8 +87,7 @@ namespace Splunk.ModularInputs.Serialization
                 catch { }
                 // ReSharper restore EmptyGeneralCatchClause
             }
-
-            this.WriteLog(LogLevel.Output, XmlFormatter.ConvertToXml(output, stanza));
+            outputLog.Trace(XmlFormatter.ConvertToXml(output, stanza));
         }
     }
 }

@@ -18,6 +18,8 @@ namespace Splunk.ModularInputs
     using System;
     using System.Xml.Linq;
 
+    using Common.Logging;
+
     using Splunk.ModularInputs.Properties;
     using Splunk.ModularInputs.Serialization;
 
@@ -34,6 +36,8 @@ namespace Splunk.ModularInputs
                                      + "  PowerShell.exe --scheme\n"
                                      + "  PowerShell.exe\n";
 
+        private static readonly ILog DebugLog = LogManager.GetLogger("debug");
+
         /// <summary>
         /// The main entry point for the PowerShell Modular Input
         /// </summary>
@@ -41,7 +45,7 @@ namespace Splunk.ModularInputs
         public static void Main(string[] args)
         {
             // log our command line
-            Console.Error.WriteLine("INFO: PowerShell.exe " + string.Join(" ", args));
+            DebugLog.Info("PowerShell.exe " + string.Join(" ", args));
 
             // configure the logger
             XmlFormatter.LogOutputErrors = Settings.Default.LogOutputErrors;
@@ -59,7 +63,7 @@ namespace Splunk.ModularInputs
                 }
                 else if (args[0].ToLowerInvariant().Equals("--validate_arguments"))
                 {
-                    Console.Error.Write( "ERROR: --validate_arguments not implemented yet");
+                    DebugLog.Error("--validate_arguments not implemented yet");
                     Environment.Exit(1);
                 }
                 else if (args[0].ToLowerInvariant().Equals("--input") && args.Length == 2)
@@ -69,7 +73,7 @@ namespace Splunk.ModularInputs
                 }
                 else
                 {
-                    Console.Error.Write("ERROR: " + Usage);
+                    DebugLog.Error(Usage);
                     Environment.Exit(2);
                 }
             }
@@ -81,17 +85,17 @@ namespace Splunk.ModularInputs
 
             try
             {
-                Console.Error.Write("DEBUG: " + document);
+                DebugLog.Debug(document);
                 input = document.Element("input");
                 if (input == null)
                 {
-                    Console.Error.Write("ERROR: input is not valid input xml");
+                    DebugLog.Error("input is not valid input xml");
                     Environment.Exit(6);
                 }
             }
             catch (Exception ex)
             {
-                Console.Error.Write("ERROR: input is not valid input xml: " + ex.Message);
+                DebugLog.Error("input is not valid input xml: " + ex.Message);
                 Environment.Exit(6);
             }
 
