@@ -18,6 +18,8 @@ namespace Splunk.ModularInputs
     using System.Collections.Generic;
     using System.Xml.Linq;
 
+    using Common.Logging;
+
     using Quartz;
     using Quartz.Impl;
 
@@ -30,7 +32,7 @@ namespace Splunk.ModularInputs
             this.Logger = logger;
 
             // Initialize output
-            this.Logger.WriteLog(LogLevel.Output, "<stream>");
+            this.Logger.WriteLog(LogLevel.All, "<stream>");
 
             this.Jobs = this.ParseJobs(input);
 
@@ -81,7 +83,7 @@ namespace Splunk.ModularInputs
         {
             var parsedJobs = new Dictionary<IJobDetail, Quartz.Collection.ISet<ITrigger>>();
 
-            // Workaround a bug in PowerShell which voids the PSModulePath
+            // Workaround a (PowerShell?) glitch which voids the PSModulePath?
             var psModulePath = Environment.GetEnvironmentVariable("PSModulePath");
 
             AddGlobalVariables(inputXml);

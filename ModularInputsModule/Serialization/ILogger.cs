@@ -16,41 +16,7 @@ namespace Splunk.ModularInputs.Serialization
     using System.Collections.Generic;
     using System.Management.Automation;
 
-    /// <summary>
-    /// List of appropriate log levels for logging functions
-    /// </summary>
-    public enum LogLevel
-    {
-        /// <summary>
-        /// Standard output (no LogLevel prepended)
-        /// </summary>
-        Output,
-
-        /// <summary>
-        /// Debug Messages
-        /// </summary>
-        Debug,
-
-        /// <summary>
-        /// Informational Messages
-        /// </summary>
-        Info,
-
-        /// <summary>
-        /// Warning Messages
-        /// </summary>
-        Warn,
-
-        /// <summary>
-        /// Error Messages
-        /// </summary>
-        Error,
-
-        /// <summary>
-        /// Fatal Error Messages
-        /// </summary>
-        Fatal
-    }
+    using Common.Logging;
 
     /// <summary>
     /// Logging interface 
