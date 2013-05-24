@@ -21,6 +21,7 @@ namespace Splunk.ModularInputs
     using System.Management.Automation;
     using System.Management.Automation.Runspaces;
     using System.Reflection;
+    using System.Threading;
 
     using Microsoft.Practices.Unity;
 
@@ -36,6 +37,8 @@ namespace Splunk.ModularInputs
     [DisallowConcurrentExecution]
     public class PowerShellJob : IJob
     {
+        private readonly Command defaultOutputCommand = new Command("Out-Default");
+
         /// <summary>
         /// Initializes static members of the <see cref="PowerShellJob"/> class.
         /// </summary>
@@ -63,12 +66,17 @@ namespace Splunk.ModularInputs
         private static InitialSessionState ConfigureSessionState()
         {
             var iss = InitialSessionState.CreateDefault();
+            // We need STA so we behave more like PS3
+            iss.ApartmentState = ApartmentState.STA;
+
+            // We need ReuseThread so that we behave, well, the way that PowerShell.exe and ISE do.
+            iss.ThreadOptions = PSThreadOptions.ReuseThread;
 
             Assembly mps = Assembly.GetExecutingAssembly(); // .GetEntryAssembly()
             string path = Path.GetDirectoryName(mps.Location);
-            if (!string.IsNullOrWhiteSpace(path))
+            if (!string.IsNullOrEmpty(path))
             {
-                iss.ImportPSModulesFromPath(Path.Combine(path, "Modules"));
+                iss.ImportPSModule(new[] {Path.Combine(path, "Modules")});
             }
             return iss.LoadCmdlets(mps);
         }
@@ -181,20 +189,32 @@ namespace Splunk.ModularInputs
             try
             {
                 // We may want to use a runspace pool? ps.RunspacePool = rsp;
-                var ps = PowerShell.Create(iss);
+                var runspace = RunspaceFactory.CreateRunspace(iss);
+                runspace.Open();
+                var pipeline = runspace.CreatePipeline();
+                pipeline.Commands.AddScript(command);
 
-                ps = ps.AddScript(command);
+
+                //// ToDo: a light-weight host API?
+                //var runSpace = RunspaceFactory.CreateRunspace(iss);
+                //Runspace.DefaultRunspace = runSpace;
+                //runSpace.Open();
+                //var ps = runSpace.CreatePipeline(command, false);
+                //ps.Commands.Add(this.defaultOutputCommand);
+                
+                // ps = ps.AddScript(command);
 
                 // Write the command output to the configured logger
-                this.Logger.WriteOutput(ps.Invoke(), stanzaName);
+                this.Logger.WriteOutput(pipeline.Invoke(), stanzaName);
 
                 // Write out any errors from invoking the script
-                if (!ps.HadErrors)
+
+                if (pipeline.Error.Count == 0)
                 {
                     return;
                 }
 
-                foreach (var error in ps.Streams.Error)
+                foreach (ErrorRecord error in pipeline.Error.ReadToEnd())
                 {
                     var details = error.ErrorDetails != null ? error.ErrorDetails.Message : error.Exception.Message;
 
@@ -210,6 +230,7 @@ namespace Splunk.ModularInputs
                         error.CategoryInfo.Reason,
                         details);
                 }
+                runspace.Close();
             }
             catch (Exception ex)
             {
@@ -217,5 +238,33 @@ namespace Splunk.ModularInputs
                 throw new JobExecutionException("Failed to execute PowerShell Script", ex);
             }
         }
+    }
+
+    public class Tuple<T1, T2, T3>
+    {
+        public Tuple(T1 item1, T2 item2, T3 item3)
+        {
+            this.Item1 = item1;
+            this.Item2 = item2;
+            this.Item3 = item3;
+        }
+
+        /// <summary>
+        /// Gets or sets the item1.
+        /// </summary>
+        /// <value>The item1.</value>
+        public T1 Item1 { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the item2.
+        /// </summary>
+        /// <value>The item2.</value>
+        public T2 Item2 { get; set; }
+
+        /// <summary>
+        /// Gets or sets the item3.
+        /// </summary>
+        /// <value>The item3.</value>
+        public T3 Item3 { get; set; }
     }
 }

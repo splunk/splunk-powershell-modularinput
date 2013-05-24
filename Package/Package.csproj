@@ -91,15 +91,6 @@
     <Content Include="appserver\static\appIcon.xcf" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ModularPowerShell\ModularPowerShell.csproj">
-      <!-- note this special output location -->
-      <DestinationSubDirectory>$(OutputBinPath)</DestinationSubDirectory>
-      <Project>{582fd7ff-27bc-4754-8360-92ad1f6604bf}</Project>
-      <Name>ModularPowerShell</Name>
-      <Private>True</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="default\props.conf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -117,6 +108,12 @@
     <Content Include="windows_x86_64\bin\Modules\LocalStorage\LocalStorage.psm1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ModularPowerShell\ModularPowerShell.csproj">
+      <Project>{edfc2cf0-26b5-4f09-8a77-63e8eb747f52}</Project>
+      <Name>ModularPowerShell</Name>
+    </ProjectReference>
   </ItemGroup>
   <!-- App is a package for creating the Splunk app structure in visual studio.
        If we wanted to turn this into a re-usable recipe for creating splunk apps
