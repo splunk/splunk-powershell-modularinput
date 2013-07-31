@@ -32,11 +32,13 @@ namespace Splunk.ModularInputs
         /// The usage string for errors
         /// </summary>
         private const string Usage = "Invalid Arguments. Valid Invocation are:\n"
-                                     + "  PowerShell.exe --validate_arguments\n"
-                                     + "  PowerShell.exe --scheme\n"
-                                     + "  PowerShell.exe\n";
+                                     + "  {0}.exe --validate_arguments\n"
+                                     + "  {0}.exe --scheme\n"
+                                     + "  {0}.exe\n";
 
         private static readonly ILog DebugLog = LogManager.GetLogger("debug");
+
+        private static readonly string PowerShellExe = System.Reflection.Assembly.GetEntryAssembly().GetName().Name;
 
         /// <summary>
         /// The main entry point for the PowerShell Modular Input
@@ -45,7 +47,7 @@ namespace Splunk.ModularInputs
         public static void Main(string[] args)
         {
             // log our command line
-            DebugLog.Info("PowerShell.exe " + string.Join(" ", args));
+            DebugLog.Info(PowerShellExe + " " + string.Join(" ", args));
 
             // configure the logger
             XmlFormatter.LogOutputErrors = Settings.Default.LogOutputErrors;
@@ -73,7 +75,7 @@ namespace Splunk.ModularInputs
                 }
                 else
                 {
-                    DebugLog.Error(Usage);
+                    DebugLog.Error(string.Format(Usage, PowerShellExe));
                     Environment.Exit(2);
                 }
             }

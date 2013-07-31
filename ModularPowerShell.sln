@@ -9,8 +9,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{D2970E
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Package", "Package\Package.csproj", "{2146681F-33E5-4078-9F6D-AC880E7AC699}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularPowerShell.PS2", "ModularPowerShell\ModularPowerShell.PS2.csproj", "{EDFC2CF0-26B5-4F09-8A77-63E8EB747F52}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularInputsModule.PS2", "ModularInputsModule\ModularInputsModule.PS2.csproj", "{369AB15B-2668-4A18-BD3A-119D3930C8E7}"
@@ -20,6 +18,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularInputsModule.PS3", "ModularInputsModule\ModularInputsModule.PS3.csproj", "{630C2C66-C908-467B-91CD-D161C02DDAD1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModularPowerShell.PS3", "ModularPowerShell\ModularPowerShell.PS3.csproj", "{1E3C0FDD-FFE4-41E1-BF0B-404475F92D1A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Package", "Package\Package.csproj", "{E090899B-44A0-4496-A3B0-62A72BFF9E73}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,22 +33,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2146681F-33E5-4078-9F6D-AC880E7AC699}.Debug|CLR2-x64.ActiveCfg = Debug|x64
-		{2146681F-33E5-4078-9F6D-AC880E7AC699}.Debug|CLR2-x64.Build.0 = Debug|x64
-		{2146681F-33E5-4078-9F6D-AC880E7AC699}.Debug|CLR2-x86.ActiveCfg = Debug|x86
-		{2146681F-33E5-4078-9F6D-AC880E7AC699}.Debug|CLR2-x86.Build.0 = Debug|x86
-		{2146681F-33E5-4078-9F6D-AC880E7AC699}.Debug|x64.ActiveCfg = Debug|x64
-		{2146681F-33E5-4078-9F6D-AC880E7AC699}.Debug|x64.Build.0 = Debug|x64
-		{2146681F-33E5-4078-9F6D-AC880E7AC699}.Debug|x86.ActiveCfg = Debug|x86
-		{2146681F-33E5-4078-9F6D-AC880E7AC699}.Debug|x86.Build.0 = Debug|x86
-		{2146681F-33E5-4078-9F6D-AC880E7AC699}.Release|CLR2-x64.ActiveCfg = Release|x64
-		{2146681F-33E5-4078-9F6D-AC880E7AC699}.Release|CLR2-x64.Build.0 = Release|x64
-		{2146681F-33E5-4078-9F6D-AC880E7AC699}.Release|CLR2-x86.ActiveCfg = Release|x86
-		{2146681F-33E5-4078-9F6D-AC880E7AC699}.Release|CLR2-x86.Build.0 = Release|x86
-		{2146681F-33E5-4078-9F6D-AC880E7AC699}.Release|x64.ActiveCfg = Release|x64
-		{2146681F-33E5-4078-9F6D-AC880E7AC699}.Release|x64.Build.0 = Release|x64
-		{2146681F-33E5-4078-9F6D-AC880E7AC699}.Release|x86.ActiveCfg = Release|x86
-		{2146681F-33E5-4078-9F6D-AC880E7AC699}.Release|x86.Build.0 = Release|x86
 		{EDFC2CF0-26B5-4F09-8A77-63E8EB747F52}.Debug|CLR2-x64.ActiveCfg = Debug|x64
 		{EDFC2CF0-26B5-4F09-8A77-63E8EB747F52}.Debug|CLR2-x64.Build.0 = Debug|x64
 		{EDFC2CF0-26B5-4F09-8A77-63E8EB747F52}.Debug|CLR2-x86.ActiveCfg = Debug|x86
@@ -109,6 +93,16 @@ Global
 		{1E3C0FDD-FFE4-41E1-BF0B-404475F92D1A}.Release|x64.Build.0 = Release|x64
 		{1E3C0FDD-FFE4-41E1-BF0B-404475F92D1A}.Release|x86.ActiveCfg = Release|x86
 		{1E3C0FDD-FFE4-41E1-BF0B-404475F92D1A}.Release|x86.Build.0 = Release|x86
+		{E090899B-44A0-4496-A3B0-62A72BFF9E73}.Debug|CLR2-x64.ActiveCfg = Debug|x86
+		{E090899B-44A0-4496-A3B0-62A72BFF9E73}.Debug|CLR2-x86.ActiveCfg = Debug|x86
+		{E090899B-44A0-4496-A3B0-62A72BFF9E73}.Debug|x64.ActiveCfg = Debug|x64
+		{E090899B-44A0-4496-A3B0-62A72BFF9E73}.Debug|x64.Build.0 = Debug|x64
+		{E090899B-44A0-4496-A3B0-62A72BFF9E73}.Debug|x86.ActiveCfg = Debug|x86
+		{E090899B-44A0-4496-A3B0-62A72BFF9E73}.Debug|x86.Build.0 = Debug|x86
+		{E090899B-44A0-4496-A3B0-62A72BFF9E73}.Release|CLR2-x64.ActiveCfg = Release|x64
+		{E090899B-44A0-4496-A3B0-62A72BFF9E73}.Release|CLR2-x86.ActiveCfg = Release|x86
+		{E090899B-44A0-4496-A3B0-62A72BFF9E73}.Release|x64.ActiveCfg = Release|x64
+		{E090899B-44A0-4496-A3B0-62A72BFF9E73}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
