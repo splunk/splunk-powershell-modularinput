@@ -26,7 +26,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>bin\x64\Release\</OutputPath>
+    <OutputPath>bin\CLR2-x64\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -52,7 +52,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>bin\x86\Release\</OutputPath>
+    <OutputPath>bin\CLR2-x86\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -119,9 +119,9 @@
     <Content Include="vspowershell.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ModularInputsModule\ModularInputsModule.csproj">
+    <ProjectReference Include="..\ModularInputsModule\ModularInputsModule.PS2.csproj">
       <Project>{369ab15b-2668-4a18-bd3a-119d3930c8e7}</Project>
-      <Name>ModularInputsModule</Name>
+      <Name>ModularInputsModule.PS2</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
