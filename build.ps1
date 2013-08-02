@@ -1,5 +1,6 @@
-#msbuild $PSScriptRoot\Package\Package.csproj /t:CopyBits /p:platform=x86 /p:Configuration=Release /p:SolutionDir=$PSScriptRoot\
-#msbuild $PSScriptRoot\Package\Package.csproj /t:CopyBits /p:platform=x64 /p:Configuration=Release /p:SolutionDir=$PSScriptRoot\
+if(!$PSScriptRoot){[string]$PSScriptRoot = $PWD}
+msbuild $PSScriptRoot\Package\Package.csproj /t:CopyBits /p:platform=x86 /p:Configuration=Release /p:SolutionDir=$PSScriptRoot\
+msbuild $PSScriptRoot\Package\Package.csproj /t:CopyBits /p:platform=x64 /p:Configuration=Release /p:SolutionDir=$PSScriptRoot\
 
 # For now, need to manually remove the .Net 4.5 reference from the 3.5 config file
 # So we're building both x86 and x64 with /t:CopyBits (instead of /t:Package)
