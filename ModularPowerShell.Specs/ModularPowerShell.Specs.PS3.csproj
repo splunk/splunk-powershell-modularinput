@@ -109,8 +109,7 @@
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>CronParsing.feature.cs</LastGenOutput>
     </None>
-    <None Include="packages.v3.5.config" />
-    <None Include="packages.v4.5.config" />
+    <None Include="packages.config" />
     <None Include="PowerShellJob.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>PowerShellJob.feature.cs</LastGenOutput>

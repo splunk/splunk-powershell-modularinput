@@ -1,4 +1,5 @@
 if(!$PSScriptRoot){[string]$PSScriptRoot = $PWD}
+
 msbuild $PSScriptRoot\Package\Package.csproj /t:CopyBits /p:platform=x86 /p:Configuration=Release /p:SolutionDir=$PSScriptRoot\
 msbuild $PSScriptRoot\Package\Package.csproj /t:CopyBits /p:platform=x64 /p:Configuration=Release /p:SolutionDir=$PSScriptRoot\
 
