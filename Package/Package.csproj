@@ -6,26 +6,20 @@
     <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Splunk</RootNamespace>
-
     <FileAlignment>512</FileAlignment>
     <RestorePackages>true</RestorePackages>
-    
     <!-- <SolutionDir Condition="'$(SolutionDir)' == ''">..\</SolutionDir> -->
     <SolutionDir Condition="'$(SolutionDir)' != '' and '$(SolutionDir)' != '*Undefined*' and !HasTrailingSlash('$(SolutionDir)')">$(SolutionDir)\</SolutionDir>
-
     <ProductVersion>1.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{E090899B-44A0-4496-A3B0-62A72BFF9E73}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Splunk</RootNamespace>
     <AssemblyName>SA-ModularInput-PowerShell</AssemblyName>
-
     <OutputPath>$(SolutionDir)Output\$(Configuration)\$(AssemblyName)</OutputPath>
-
     <ProjectReferenceBuildTargets>Rebuild</ProjectReferenceBuildTargets>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>    
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputBinPath>windows_x86_64\bin\</OutputBinPath>
@@ -62,7 +56,6 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-
   <ItemGroup>
     <Content Include="windows_x86\bin\Modules\LocalStorage\LocalStorage.psm1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -104,7 +97,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>    
+  <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -117,7 +110,6 @@
       <Project>{1e3c0fdd-ffe4-41e1-bf0b-404475f92d1a}</Project>
       <Name>ModularPowerShell.PS3</Name>
     </ProjectReference>
-
     <ProjectReference Include="..\ModularPowerShell\ModularPowerShell.PS2.csproj">
       <!-- note this special output location -->
       <DestinationSubDirectory>$(OutputBinPath)</DestinationSubDirectory>
@@ -125,7 +117,6 @@
       <Name>ModularPowerShell.PS3</Name>
     </ProjectReference>
   </ItemGroup>
-
   <!-- App is a package for creating the Splunk app structure in visual studio.
        If we wanted to turn this into a re-usable recipe for creating splunk apps
        we could remove the stuff from here down and stick it in a splunk.targets file.
@@ -138,22 +129,17 @@
       _CopyFilesMarkedCopyLocal;
       _CopySourceItemsToOutputDirectory;
     </CopyBitsDependsOn>
-
     <!-- See http://msdn.microsoft.com/en-us/magazine/dd419659.aspx#id0090093 -->
-    <CleanDependsOn>CleanPackage;$(CleanDependsOn);</CleanDependsOn>    
-
+    <CleanDependsOn>CleanPackage;$(CleanDependsOn);</CleanDependsOn>
     <PackagePath Condition="$(PackagePath) == ''">$(OutputPath)..\$(AssemblyName).tar.gz</PackagePath>
   </PropertyGroup>
-
   <Target Name="_CheckForSolutionDir">
     <Error Condition="'' == '$(SolutionDir)' or '$(SolutionDir)' == '*Undefined*'" Text="SolutionDir is *Undefined*. Please provide the root solution dir (e.g.: /p:SolutionDir=..\)" />
     <Error Condition="!HasTrailingSlash('$(SolutionDir)')" Text="SolutionDir is missing trailing slash: '$(SolutionDir)'" />
   </Target>
-
   <Target Name="CleanPackage" BeforeTargets="Package">
-      <Delete Files="$(PackagePath)" />
+    <Delete Files="$(PackagePath)" />
   </Target>
-
   <Target Name="CopyBits" DependsOnTargets="$(CopyBitsDependsOn)" BeforeTargets="Package">
     <!-- <Message Text="1. ReferencePath:%0D%0A%09@(ReferencePath->'$(OutDir)%(DestinationSubDirectory)%(Filename)%(Extension)', '%0D%0A%09')" /> -->
     <Message Text="Copy Reference Output Folders:%0D%0A%09@(ReferenceCopyLocalPaths->'%(RootDir)%(Directory)', '%0D%0A%09')" />
@@ -161,15 +147,10 @@
       <ReferencePaths>@(ReferenceCopyLocalPaths->'%(RelativeDir)**\*',';')</ReferencePaths>
     </PropertyGroup>
     <ItemGroup>
-        <DependencyFiles Include="$(ReferencePaths)" Exclude="*.pdb"/>
-    </ItemGroup>    
-    <Copy OverwriteReadOnlyFiles="True" SkipUnchangedFiles="True"
-        SourceFiles="@(DependencyFiles)"
-        DestinationFiles="$(OutputPath)$(OutputBinPath)%(RecursiveDir)%(Filename)%(Extension)"
-    />
+      <DependencyFiles Include="$(ReferencePaths)" Exclude="*.pdb" />
+    </ItemGroup>
+    <Copy OverwriteReadOnlyFiles="True" SkipUnchangedFiles="True" SourceFiles="@(DependencyFiles)" DestinationFiles="$(OutputPath)$(OutputBinPath)%(RecursiveDir)%(Filename)%(Extension)" />
   </Target>
-
-
   <Target Name="Package" DependsOnTargets="CopyBits" Inputs="$(OutputPath)" Outputs="$(PackagePath)">
     <PropertyGroup>
       <!-- We need to package our binaries up, so we have some extra steps here -->

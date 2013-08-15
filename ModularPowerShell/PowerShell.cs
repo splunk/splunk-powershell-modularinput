@@ -116,8 +116,13 @@ namespace Splunk.ModularInputs
                 new XDocument(
                     new XElement(
                         "scheme",
+#if CLR2
+                        new XElement("title", "PowerShell 2 Scripts"),
+                        new XElement("description", "Execute PowerShell 2.0 scripts in the CLR 2 (.Net 3.5) host"),
+# else
                         new XElement("title", "PowerShell Scripts"),
-                        new XElement("description", "Handles executing PowerShell scripts with parameters as inputs"),
+                        new XElement("description", "Execute PowerShell scripts with parameters as inputs"),
+#endif
                         new XElement("streaming_mode", "xml"),
                         new XElement("use_single_instance", "true"),
                         new XElement(
