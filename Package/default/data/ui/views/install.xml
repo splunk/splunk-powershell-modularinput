@@ -135,13 +135,13 @@ specifying a script in inputs.conf and within your script:</p>
 <h3>Output</h3>
 <p>The Splunk Add-on for PowerShell does not process the output until your pipeline and runspace are finished.  This means it does not process script properties.  You should also avoid long-running scripts.  Particularly, you should not write scripts that wait for things to happen unless you exit every time there is output.  All output has the same time stamp unless you override it (see below).</p>
 <p>Each object that is output by your script is turned into an event in Splunk.  The properties of each object will be converted to key="value" strings.  The value is always a quoted script and will be converted by calling .ToString() on the property.  This generally means the output must be simple and complex nested objects should be flattened within your script.</p>
-<>There are a few special property names which have significance for the event and allow you to override the defaults defined in the inputs.conf stanza:</p>
+<p>There are a few special property names which have significance for the event and allow you to override the defaults defined in the inputs.conf stanza:</p>
 <ul>
 <li><b>SplunkIndex</b> - Overrides the index that the output will be stored in</li>
-<li><b>SplunkSourc</b>  - Overrides the "source" for the ouput</li>
-<li><b>SplunkHos</b>  - Overrides the "host" name for the output</li>
-<li><b>SplunkSourceTyp</b>  - Overrides the "sourcetype" for the output</li>
-<li><b>SplunkTim</b>  - Overrides the "time" -- if you don't specify this, all objects output by your script in a single execution will get roughly the same timestamp, because they're held for output until the script execution is finished, and then marked with the output time.</li>
+<li><b>SplunkSource</b>  - Overrides the "source" for the ouput</li>
+<li><b>SplunkHost</b>  - Overrides the "host" name for the output</li>
+<li><b>SplunkSourceType</b>  - Overrides the "sourcetype" for the output</li>
+<li><b>SplunkTime</b>  - Overrides the "time" -- if you don't specify this, all objects output by your script in a single execution will get roughly the same timestamp, because they're held for output until the script execution is finished, and then marked with the output time.</li>
 </ul>
 
 <p>These properties will never show up in the key="value" output.</p>
