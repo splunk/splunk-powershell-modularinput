@@ -72,11 +72,23 @@ namespace Splunk.ModularInputs
             // We need ReuseThread so that we behave, well, the way that PowerShell.exe and ISE do.
             iss.ThreadOptions = PSThreadOptions.ReuseThread;
 
-            Assembly mps = Assembly.GetExecutingAssembly(); // .GetEntryAssembly()
+            // We moved ModularInputsModule.dll into a subdirectory
+            // So we need to use GetEntryAssembly to use the path of PowerShell.exe
+            Assembly mps = Assembly.GetEntryAssembly(); // .GetExecutingAssembly();
             string path = Path.GetDirectoryName(mps.Location);
             if (!string.IsNullOrEmpty(path))
             {
-                iss.ImportPSModule(new[] {Path.Combine(path, "Modules")});
+                // because this must work with PowerShell2, we can't use ImportPSModulesFromPath
+                path = Path.Combine(path, "Modules");
+                if (!Directory.Exists(path))
+                {
+                    var logger = new ConsoleLogger();
+                    logger.WriteLog(LogLevel.Warn, "The Modules Path '{0}' could not be found", path);
+                }
+                else
+                {
+                    iss.ImportPSModule(Directory.GetDirectories(path));
+                }
             }
             return iss.LoadCmdlets(mps);
         }
@@ -119,7 +131,11 @@ namespace Splunk.ModularInputs
                     // ReSharper restore EmptyGeneralCatchClause
                 }
             }
-            Logger = new ConsoleLogger();
+
+            if (Logger == null)
+            {
+                Logger = new ConsoleLogger();
+            }
         }
 
         /// <summary>

@@ -71,7 +71,13 @@ namespace Splunk.ModularInputs
                 else if (args[0].ToLowerInvariant().Equals("--input") && args.Length == 2)
                 {
                     // Logger.WriteLog(LogLevel.Info, "Reading InputDefinition from parameter for testing");
-                    document = XDocument.Load(args[1]);
+                    var path = System.IO.Path.GetFullPath(args[1]);
+                    if (!System.IO.File.Exists(path))
+                    {
+                        DebugLog.Error("Input file not found: " + path);
+                        Environment.Exit(4);
+                    }
+                    document = XDocument.Load(path);
                 }
                 else
                 {
