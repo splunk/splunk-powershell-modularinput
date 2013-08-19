@@ -7,6 +7,11 @@ param(
 if(!$PSScriptRoot){[string]$PSScriptRoot = $PWD}
 
 if(!$SkipBuild) {
+    # Make sure the .net folder is in your PATH. Silly Windows.
+    if(!($Path -split ";" | Where { $_ -eq [System.Runtime.InteropServices.RuntimeEnvironment]::GetRuntimeDirectory()})) {
+      $Env:Path += ";" + [System.Runtime.InteropServices.RuntimeEnvironment]::GetRuntimeDirectory()
+    }
+
     msbuild $PSScriptRoot\Package\Package.csproj /t:CopyBits /p:platform=x86 /p:Configuration=Release /p:SolutionDir=$PSScriptRoot\
     msbuild $PSScriptRoot\Package\Package.csproj /t:CopyBits /p:platform=x64 /p:Configuration=Release /p:SolutionDir=$PSScriptRoot\
 }
