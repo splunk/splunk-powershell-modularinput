@@ -101,25 +101,21 @@ namespace Splunk.ModularInputs.Serialization
                 properties = new HashSet<string>(ReservedProperties);
             }
 
-            IEnumerable<KeyValuePair<string, PSObject>> values;
+            IEnumerable<KeyValuePair<string, object>> values;
             if (output.BaseObject is IEnumerable<KeyValuePair<string, object>>)
             {
-                values = ConvertToNameValueObjects(output.BaseObject as IEnumerable<KeyValuePair<string, PSObject>>, properties);
+                values = FilterKeyValuePairs(output.BaseObject as IEnumerable<KeyValuePair<string, object>>, properties);
+            }
+            else if (output.BaseObject is IDictionary)
+            {
+                values = ConvertToKeyValuePairs(output.BaseObject as IDictionary, properties);
             }
             else
             {
-                var o = output.BaseObject as IDictionary;
-                if (o != null)
-                {
-                    values = ConvertToNameValueObjects(o, properties);
-                }
-                else
-                {
-                    values = FilterNameValueObjects(output.Properties, properties);
-                }
+                values = FilterKeyValuePairs(output.Properties, properties);
             }
 
-            return KeyValuePairs(values, output.BaseObject as string, !addMetadata);
+            return KeyValuePairsToString(values, output.BaseObject as string, !addMetadata);
         }
 
         /// <summary>
@@ -128,19 +124,19 @@ namespace Splunk.ModularInputs.Serialization
         /// <param name="output">The properties to be selected.</param>
         /// <param name="properties">An optional list of keys that we care about.</param>
         /// <returns>An enumerable collection of PSPropertyInfo objects which have Name and Value properties</returns>
-        private static IEnumerable<KeyValuePair<string, PSObject>> FilterNameValueObjects(IEnumerable<PSPropertyInfo> output, IEnumerable<string> properties)
+        private static IEnumerable<KeyValuePair<string, object>> FilterKeyValuePairs(IEnumerable<PSPropertyInfo> output, IEnumerable<string> properties)
         {
             Debug.Assert(output != null, "output != null");
 
             if (properties == null)
             {
                 return output.Where(p => p.MemberType != PSMemberTypes.ScriptProperty && p.IsGettable)
-                             .Select( p=> new KeyValuePair<string, PSObject>(p.Name, p.Value as PSObject));
+                    .Select( p=> new KeyValuePair<string, object>(p.Name, p.Value));
             }
 
             return output.Where( p => properties.Contains(p.Name, StringComparer.InvariantCultureIgnoreCase)
                                    && p.MemberType != PSMemberTypes.ScriptProperty && p.IsGettable)
-                         .Select(p => new KeyValuePair<string, PSObject>(p.Name, p.Value as PSObject));
+                         .Select(p => new KeyValuePair<string, object>(p.Name, p.Value));
         }
 
         /// <summary>
@@ -149,15 +145,15 @@ namespace Splunk.ModularInputs.Serialization
         /// <param name="output">The objects to be converted.</param>
         /// <param name="keys">An optional list of keys that we care about.</param>
         /// <returns>An enumerable collection of dynamic objects with Name and Value properties</returns>
-        private static IEnumerable<KeyValuePair<string, PSObject>> ConvertToNameValueObjects(IEnumerable<KeyValuePair<string, PSObject>> output, ICollection<string> keys)
+        private static IEnumerable<KeyValuePair<string, object>> FilterKeyValuePairs(IEnumerable<KeyValuePair<string, object>> output, IEnumerable<string> keys)
         {
             if (keys == null)
             {
-                return output.Select(kv => new KeyValuePair<string, PSObject>(kv.Key, kv.Value));
+                return output.Select(kv => new KeyValuePair<string, object>(kv.Key, kv.Value));
             }
             else
             {
-                return output.Where(kv => keys.Contains(kv.Key)).Select(kv => new KeyValuePair<string, PSObject>(kv.Key, kv.Value));
+                return output.Where(kv => keys.Contains(kv.Key)).Select(kv => new KeyValuePair<string, object>(kv.Key, kv.Value));
             }
         }
 
@@ -167,20 +163,20 @@ namespace Splunk.ModularInputs.Serialization
         /// <param name="output">The objects to be converted.</param>
         /// <param name="keys">An optional list of keys that we care about.</param>
         /// <returns>An enumerable collection of dynamic objects with Name and Value properties</returns>
-        private static IEnumerable<KeyValuePair<string, PSObject>> ConvertToNameValueObjects(IDictionary output, IEnumerable<string> keys)
+        private static IEnumerable<KeyValuePair<string, object>> ConvertToKeyValuePairs(IDictionary output, IEnumerable<string> keys)
         {
             if (keys == null)
             {
                 foreach (DictionaryEntry kv in output)
                 {
-                    yield return new KeyValuePair<string, PSObject>(kv.Key.ToString(), kv.Value as PSObject);
+                    yield return new KeyValuePair<string, object>(kv.Key.ToString(), kv.Value);
                 }
             }
             else
             {
                 foreach (var name in keys.Where(output.Contains))
                 {
-                    yield return new KeyValuePair<string, PSObject>(name, output[name] as PSObject);
+                    yield return new KeyValuePair<string, object>(name, output[name]);
                 }
             }
         }
@@ -192,7 +188,7 @@ namespace Splunk.ModularInputs.Serialization
         /// <param name="content">Extra content to be embedded below the object output</param>
         /// <param name="rawTextOnly">If set, outputs only the key=value data, with no XML metadata and no encoding</param>
         /// <returns>The string representation of the objects</returns>
-        private static string KeyValuePairs(IEnumerable<KeyValuePair<string, PSObject>> objects, string content = "", bool rawTextOnly = false)
+        private static string KeyValuePairsToString(IEnumerable<KeyValuePair<string, object>> objects, string content = "", bool rawTextOnly = false)
         {
             bool hasTime = false;
             var meta = new StringBuilder();
@@ -211,7 +207,19 @@ namespace Splunk.ModularInputs.Serialization
                 {
                     if (property.Value != null)
                     {
-                        value = property.Value.ToString();
+                        // The "O" or "o" standard format specifier represents a custom date and time format string using a pattern that preserves time zone information.
+                        if (property.Value is DateTime)
+                        {
+                            value = ((DateTime)property.Value).ToString("o");
+                        }
+                        else if (property.Value is DateTimeOffset)
+                        {
+                            value = ((DateTimeOffset)property.Value).ToString("o");
+                        }
+                        else
+                        {
+                            value = string.Format(CultureInfo.InvariantCulture, "{0}", property.Value);
+                        }
                     }
                 }
                 catch
@@ -228,7 +236,7 @@ namespace Splunk.ModularInputs.Serialization
                         DateTimeOffset time;
                         try
                         {
-                            time = (DateTimeOffset)property.Value.ImmediateBaseObject;
+                            time = (DateTimeOffset)property.Value;
                         }
                         catch
                         {

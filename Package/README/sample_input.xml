@@ -1,6 +1,6 @@
 <input>
   <server_host>RETINA</server_host>
-  <server_uri>https://127.0.0.1:8089</server_uri>
+  <!--<server_uri>https://127.0.0.1:8089</server_uri>-->
   <!-- the real session key would look more like a sha -->
   <session_key>dontusethiskeyitsnotcurrentatall</session_key>
   <!-- note, this is nothing like the real path, but it works for testing.

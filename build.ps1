@@ -31,21 +31,22 @@ Remove-Item "${OutputPath}.tar.gz" -Force -ErrorAction SilentlyContinue
 # Remove any visual studio junk
 Get-ChildItem $OutputPath -recurse -filter *vshost.exe* | Remove-Item
 
+
+$Config =  "$OutputPath\windows_x86\bin\PowerShell2.exe.config"
+if(Test-Path $Config) {
+    Set-Content $Config ($(Get-Content $Config) -NotMatch "lib/net45")
+} else {
+    Write-Warning "Config for x86 PS2 is missing"
+}
+
+$Config =  "$OutputPath\windows_x86_64\bin\PowerShell2.exe.config"
+if(Test-Path $Config) {
+    Set-Content $Config ($(Get-Content $Config) -NotMatch "lib/net45")
+} else {
+    Write-Warning "Config for x64 PS2 is missing"
+}
+
 if(!$NoPackage) {
-
-    $Config =  "$OutputPath\windows_x86\bin\PowerShell2.exe.config"
-    if(Test-Path $Config) {
-        Set-Content $Config ($(Get-Content $Config) -NotMatch "lib/net45")
-    } else {
-        Write-Warning "Config for x86 PS2 is missing"
-    }
-
-    $Config =  "$OutputPath\windows_x86_64\bin\PowerShell2.exe.config"
-    if(Test-Path $Config) {
-        Set-Content $Config ($(Get-Content $Config) -NotMatch "lib/net45")
-    } else {
-        Write-Warning "Config for x64 PS2 is missing"
-    }
 
     if(!(Get-ChildItem $OutputPath -ErrorAction SilentlyContinue)) { 
         Write-Warning "No output to package. Skipping Package step"
