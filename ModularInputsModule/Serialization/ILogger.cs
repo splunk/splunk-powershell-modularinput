@@ -15,6 +15,7 @@ namespace Splunk.ModularInputs.Serialization
 {
     using System.Collections.Generic;
     using System.Management.Automation;
+    using System.Text.RegularExpressions;
 
     using Common.Logging;
 
@@ -52,6 +53,9 @@ namespace Splunk.ModularInputs.Serialization
     /// </summary>
     public abstract class BaseLogger : ILogger
     {
+
+        internal readonly Regex Trim = new Regex("\\s*[\\r\\n]+", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
         /// <summary>
         /// Writes out splunk xml events for the specified stanza
         /// </summary>

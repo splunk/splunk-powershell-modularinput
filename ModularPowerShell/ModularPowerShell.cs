@@ -39,9 +39,10 @@ namespace Splunk.ModularInputs
 
             this.Jobs = this.ParseJobs(input);
 
+            Logger.WriteLog(LogLevel.Info, "Modular PowerShell Initialized Successfully: {0} Jobs Loaded", this.Jobs.Count);
+
             // TODO: Finalize output
             // Console.Out.WriteLine("</stream>");
-            this.Logger.WriteLog(LogLevel.Info, "Finished InputDefinition");            
         }
 
         /// <summary>
@@ -64,7 +65,10 @@ namespace Splunk.ModularInputs
             {
                 var scheduler = StdSchedulerFactory.GetDefaultScheduler();
                 scheduler.Start();
+
+                Logger.WriteLog(LogLevel.Debug, "Scheduler Started. Scheduling {0} Jobs", this.Jobs.Count);
                 scheduler.ScheduleJobs(this.Jobs, true);
+                Logger.WriteLog(LogLevel.Debug, "Scheduled {0} Jobs Successfully", this.Jobs.Count);
             }
             catch (Exception ex)
             {
@@ -101,7 +105,6 @@ namespace Splunk.ModularInputs
                         throw new ArgumentOutOfRangeException("The input stanza has no name.");
                     }
 
-
                     // get the hostname part of the powershell://stanza
                     var name = nameAttribute.Value;
                     // parse by hand, because splunk has no problem with "powershell2://stanza with spaces"
@@ -122,8 +125,7 @@ namespace Splunk.ModularInputs
                 }
                 catch (Exception ex)
                 {
-                    Logger.WriteLog(
-                        LogLevel.Fatal, "Failed to parse stanza {0}\n{1}", stanza.Attribute("name"), ex.Message);
+                    Logger.WriteLog(LogLevel.Fatal, "Failed to parse stanza {0}\n{1}", stanza.Attribute("name"), ex.Message);
 
                     if (ex.InnerException != null)
                     {

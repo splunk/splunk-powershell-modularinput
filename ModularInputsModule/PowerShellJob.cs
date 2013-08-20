@@ -172,7 +172,7 @@ namespace Splunk.ModularInputs
                 }
 
                 // Logging FYI:
-                this.Logger.WriteLog(LogLevel.Info, string.Format("--- Stanza: {0} ---", name));
+                this.Logger.WriteLog(LogLevel.Debug, string.Format("Execute Stanza: {0}", name));
 
                 // Environment.SetEnvironmentVariable("SPLUNKPS_INPUT_NAME", name);
 
@@ -234,8 +234,7 @@ namespace Splunk.ModularInputs
                 {
                     var details = error.ErrorDetails != null ? error.ErrorDetails.Message : error.Exception.Message;
 
-                    this.Logger.WriteLog(
-                        LogLevel.Error,
+                    this.Logger.WriteLog( LogLevel.Error,
                         "Stanza=\"{0}\"\nSCRIPT=\"{1}\"\nCATEGORY=\"{2}\"\nTargetName=\"{3}\"\nTargetType=\"{4}\"\nActivity=\"{5}\"\nReason=\"{6}\"\nDetails=\"{7}\"\n",
                         stanzaName,
                         command,

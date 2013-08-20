@@ -13,11 +13,13 @@
 // ***********************************************************************
 namespace Splunk.ModularInputs.Serialization
 {
+    using System.Linq;
+
     using Common.Logging;
     using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
+    using System.Globalization;
     using System.Management.Automation;
+    using System.Text.RegularExpressions;
 
     /// <summary>
     /// ConsoleLogger is an implemenation of ILogger that outputs to Console.Error and Console.Out
@@ -28,35 +30,39 @@ namespace Splunk.ModularInputs.Serialization
         private readonly ILog outputLog = LogManager.GetLogger("output");
 
         /// <summary>
-        /// Convenience method to write log messages to splunkd.log
+        /// Convenience method to write output for splunkd.
+        /// LogLevel.All is output, everything else goes to the powershell.log
         /// </summary>
         /// <param name="level">The log level</param>
         /// <param name="format">A composite format string that contains text intermixed with zero or more format items</param>
         /// <param name="args">An object array that contains 0 or more items to format</param>
         public override void WriteLog(LogLevel level, string format, params object[] args)
         {
+            // remove newlines from output messages (this is one of the reasons everything goes through here.
+            var logMessage = base.Trim.Replace(string.Format(CultureInfo.InvariantCulture, format, args), " ");
+
             switch (level)
             {
                 case LogLevel.All:
-                    outputLog.TraceFormat(format, args);
+                    outputLog.Trace(logMessage);
                     break;
                 case LogLevel.Trace:
-                    outputLog.TraceFormat(format, args);
+                    debugLog.Trace(logMessage);
                     break;
                 case LogLevel.Debug:
-                    debugLog.DebugFormat(format, args);
+                    debugLog.Debug(logMessage);
                     break;
                 case LogLevel.Info:
-                    debugLog.InfoFormat(format, args);
+                    debugLog.Info(logMessage);
                     break;
                 case LogLevel.Warn:
-                    debugLog.WarnFormat(format, args);
+                    debugLog.Warn(logMessage);
                     break;
                 case LogLevel.Error:
-                    debugLog.ErrorFormat(format, args);
+                    debugLog.Error(logMessage);
                     break;
                 case LogLevel.Fatal:
-                    debugLog.FatalFormat(format, args);
+                    debugLog.Fatal(logMessage);
                     break;
                 case LogLevel.Off:
                     break;
@@ -77,17 +83,26 @@ namespace Splunk.ModularInputs.Serialization
             {
                 try
                 {
-                    if ((bool)pOutput.Properties["SplunkPreFormatted"].Value)
+                    var preformatted = pOutput.Properties.Match("SplunkPreFormatted").FirstOrDefault();
+                    if ((preformatted != null) && preformatted.Value is bool)
                     {
-                        outputLog.Trace((string)pOutput.BaseObject);
-                        return;
+                        if ((bool)preformatted.Value)
+                        {
+                            outputLog.Trace(pOutput.BaseObject);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        this.WriteLog(LogLevel.Error, "Error: Invalid 'SplunkPreFormatted' property: {0}", preformatted);
                     }
                 }
-                // ReSharper disable EmptyGeneralCatchClause
-                catch { }
-                // ReSharper restore EmptyGeneralCatchClause
+                catch (Exception ex)
+                {
+                    this.WriteLog(LogLevel.Error, "Exception while logging 'SplunkPreFormatted' output: {0}", ex.Message);
+                }
             }
-            outputLog.Trace(XmlFormatter.ConvertToXml(pOutput, stanza));
+            this.WriteLog(LogLevel.All, XmlFormatter.ConvertToXml(pOutput, stanza));
         }
     }
 }

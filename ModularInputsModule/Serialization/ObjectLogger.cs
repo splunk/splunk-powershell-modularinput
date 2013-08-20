@@ -15,6 +15,7 @@
 namespace Splunk.ModularInputs.Serialization
 {
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Management.Automation;
     using System.Text;
 
@@ -68,7 +69,7 @@ namespace Splunk.ModularInputs.Serialization
         public override void WriteLog(LogLevel level, string format, params object[] args)
         {
             this.log.AppendFormat("{0}: ", level);
-            this.log.AppendFormat(format, args);
+            this.log.Append(base.Trim.Replace(string.Format(CultureInfo.InvariantCulture, format, args), " "));
             this.log.AppendLine();
         }
 
