@@ -202,10 +202,11 @@ namespace Splunk.ModularInputs
         /// <exception cref="Quartz.JobExecutionException">Failed to execute PowerShell Script</exception>
         public void Execute(InitialSessionState iss, string command, string stanzaName)
         {
+            Runspace runspace = null;
             try
             {
                 // We may want to use a runspace pool? ps.RunspacePool = rsp;
-                var runspace = RunspaceFactory.CreateRunspace(iss);
+                runspace = RunspaceFactory.CreateRunspace(iss);
                 runspace.Open();
                 var pipeline = runspace.CreatePipeline();
                 pipeline.Commands.AddScript(command);
@@ -217,7 +218,7 @@ namespace Splunk.ModularInputs
                 //runSpace.Open();
                 //var ps = runSpace.CreatePipeline(command, false);
                 //ps.Commands.Add(this.defaultOutputCommand);
-                
+
                 // ps = ps.AddScript(command);
 
                 // Write the command output to the configured logger
@@ -234,7 +235,8 @@ namespace Splunk.ModularInputs
                 {
                     var details = error.ErrorDetails != null ? error.ErrorDetails.Message : error.Exception.Message;
 
-                    this.Logger.WriteLog( LogLevel.Error,
+                    this.Logger.WriteLog(
+                        LogLevel.Error,
                         "Stanza=\"{0}\"\nSCRIPT=\"{1}\"\nCATEGORY=\"{2}\"\nTargetName=\"{3}\"\nTargetType=\"{4}\"\nActivity=\"{5}\"\nReason=\"{6}\"\nDetails=\"{7}\"\n",
                         stanzaName,
                         command,
@@ -251,6 +253,13 @@ namespace Splunk.ModularInputs
             {
                 this.Logger.WriteLog(LogLevel.Error, "PowerShell Exception:\r\n" + ex.Message);
                 throw new JobExecutionException("Failed to execute PowerShell Script", ex);
+            }
+            finally
+            {
+                if (runspace != null)
+                {
+                    runspace.Dispose();
+                }
             }
         }
     }
