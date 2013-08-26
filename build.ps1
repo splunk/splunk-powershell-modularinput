@@ -31,18 +31,6 @@ Remove-Item "${OutputPath}.tar.gz" -Force -ErrorAction SilentlyContinue
 # Remove any visual studio junk
 Get-ChildItem $OutputPath -recurse -filter *vshost.exe* | Remove-Item
 
-# Change the stuff that should be conditional in the config files:
-foreach($Config in "$OutputPath\windows_x86\bin\PowerShell2.exe.config",
-                   "$OutputPath\windows_x86_64\bin\PowerShell2.exe.config")
-{
-    if(Test-Path $Config) {
-        Set-Content $Config ($(Get-Content $Config) -NotMatch "lib/net45" -Replace "/log/splunk/powershell.log", "/log/splunk/powershell2.log")
-    } else {
-        Write-Warning "PowerShell 2 Config is missing: $Config"
-    }
-}
-
-
 if(!$NoPackage) {
 
     if(!(Get-ChildItem $OutputPath -ErrorAction SilentlyContinue)) { 

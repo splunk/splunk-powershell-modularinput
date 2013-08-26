@@ -117,11 +117,12 @@
       <Name>ModularPowerShell.PS3</Name>
     </ProjectReference>
   </ItemGroup>
-  <!-- App is a package for creating the Splunk app structure in visual studio.
+  <!-- This app is a package for creating the Splunk app structure in visual studio.
        If we wanted to turn this into a re-usable recipe for creating splunk apps
-       we could remove the stuff from here down and stick it in a splunk.targets file.
+       we could move the stuff from here down and stick it in a splunk.targets file.
   -->
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
+
   <PropertyGroup>
     <!-- these are the steps that ensure references are compiled, and let us figure out where to copy things from -->
     <CopyBitsDependsOn>
@@ -140,6 +141,7 @@
   <Target Name="CleanPackage" BeforeTargets="Package">
     <Delete Files="$(PackagePath)" />
   </Target>
+  
   <Target Name="CopyBits" DependsOnTargets="$(CopyBitsDependsOn)" BeforeTargets="Package">
     <!-- <Message Text="1. ReferencePath:%0D%0A%09@(ReferencePath->'$(OutDir)%(DestinationSubDirectory)%(Filename)%(Extension)', '%0D%0A%09')" /> -->
     <Message Text="Copy Reference Output Folders:%0D%0A%09@(ReferenceCopyLocalPaths->'%(RootDir)%(Directory)', '%0D%0A%09')" />
@@ -151,6 +153,7 @@
     </ItemGroup>
     <Copy OverwriteReadOnlyFiles="True" SkipUnchangedFiles="True" SourceFiles="@(DependencyFiles)" DestinationFiles="$(OutputPath)$(OutputBinPath)%(RecursiveDir)%(Filename)%(Extension)" />
   </Target>
+  
   <Target Name="Package" DependsOnTargets="CopyBits" Inputs="$(OutputPath)" Outputs="$(PackagePath)">
     <PropertyGroup>
       <!-- We need to package our binaries up, so we have some extra steps here -->
