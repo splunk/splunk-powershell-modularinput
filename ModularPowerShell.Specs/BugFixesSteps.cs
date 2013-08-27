@@ -121,7 +121,7 @@
         public void ThenTheOutputShouldHaveASplunkPreFormattedPropertyOnIt()
         {
             var output = ScenarioContext.Current.Get<ObjectLogger>("OutputLog").Output["Test"];
-            Assert.True(((dynamic)output.First()).SplunkPreFormatted);
+            Assert.True(((PSObject)output.First()).Properties.Match("SplunkPreFormatted").Count > 0);
         }
 
     }

@@ -16,6 +16,7 @@
 namespace Splunk.ModularInputs
 {
     using System;
+    using System.Linq;
     using System.Xml.Linq;
 
     using Common.Logging;
@@ -32,11 +33,13 @@ namespace Splunk.ModularInputs
         /// The usage string for errors
         /// </summary>
         private const string Usage = "Invalid Arguments. Valid Invocation are:\n"
-                                     + "  PowerShell.exe --validate_arguments\n"
-                                     + "  PowerShell.exe --scheme\n"
-                                     + "  PowerShell.exe\n";
+                                     + "  {0}.exe --validate_arguments\n"
+                                     + "  {0}.exe --scheme\n"
+                                     + "  {0}.exe\n";
 
         private static readonly ILog DebugLog = LogManager.GetLogger("debug");
+
+        private static readonly string PowerShellExe = System.Reflection.Assembly.GetEntryAssembly().GetName().Name;
 
         /// <summary>
         /// The main entry point for the PowerShell Modular Input
@@ -45,7 +48,7 @@ namespace Splunk.ModularInputs
         public static void Main(string[] args)
         {
             // log our command line
-            DebugLog.Info("PowerShell.exe " + string.Join(" ", args));
+            DebugLog.Debug(PowerShellExe + " " + string.Join(" ", args));
 
             // configure the logger
             XmlFormatter.LogOutputErrors = Settings.Default.LogOutputErrors;
@@ -63,17 +66,23 @@ namespace Splunk.ModularInputs
                 }
                 else if (args[0].ToLowerInvariant().Equals("--validate_arguments"))
                 {
-                    DebugLog.Error("--validate_arguments not implemented yet");
+                    DebugLog.Fatal("--validate_arguments not implemented yet");
                     Environment.Exit(1);
                 }
                 else if (args[0].ToLowerInvariant().Equals("--input") && args.Length == 2)
                 {
                     // Logger.WriteLog(LogLevel.Info, "Reading InputDefinition from parameter for testing");
-                    document = XDocument.Load(args[1]);
+                    var path = System.IO.Path.GetFullPath(args[1]);
+                    if (!System.IO.File.Exists(path))
+                    {
+                        DebugLog.Fatal("Input file not found: " + path);
+                        Environment.Exit(4);
+                    }
+                    document = XDocument.Load(path);
                 }
                 else
                 {
-                    DebugLog.Error(Usage);
+                    DebugLog.Fatal(string.Format(Usage, PowerShellExe));
                     Environment.Exit(2);
                 }
             }
@@ -85,17 +94,16 @@ namespace Splunk.ModularInputs
 
             try
             {
-                DebugLog.Debug(document);
                 input = document.Element("input");
                 if (input == null)
                 {
-                    DebugLog.Error("input is not valid input xml");
+                    DebugLog.Fatal("input is not valid input xml: no root input element");
                     Environment.Exit(6);
                 }
             }
             catch (Exception ex)
             {
-                DebugLog.Error("input is not valid input xml: " + ex.Message);
+                DebugLog.Fatal("input is not valid input xml: " + ex.Message);
                 Environment.Exit(6);
             }
 
@@ -114,8 +122,13 @@ namespace Splunk.ModularInputs
                 new XDocument(
                     new XElement(
                         "scheme",
+#if CLR2
+                        new XElement("title", "PowerShell 2 Scripts"),
+                        new XElement("description", "Execute PowerShell 2.0 scripts in the CLR 2 (.Net 3.5) host"),
+# else
                         new XElement("title", "PowerShell Scripts"),
-                        new XElement("description", "Handles executing PowerShell scripts with parameters as inputs"),
+                        new XElement("description", "Execute PowerShell scripts with parameters as inputs"),
+#endif
                         new XElement("streaming_mode", "xml"),
                         new XElement("use_single_instance", "true"),
                         new XElement(

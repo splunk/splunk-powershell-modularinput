@@ -21,6 +21,7 @@ namespace Splunk.ModularInputs
     using System.Management.Automation;
     using System.Management.Automation.Runspaces;
     using System.Reflection;
+    using System.Threading;
 
     using Microsoft.Practices.Unity;
 
@@ -36,6 +37,8 @@ namespace Splunk.ModularInputs
     [DisallowConcurrentExecution]
     public class PowerShellJob : IJob
     {
+        private readonly Command defaultOutputCommand = new Command("Out-Default");
+
         /// <summary>
         /// Initializes static members of the <see cref="PowerShellJob"/> class.
         /// </summary>
@@ -63,12 +66,29 @@ namespace Splunk.ModularInputs
         private static InitialSessionState ConfigureSessionState()
         {
             var iss = InitialSessionState.CreateDefault();
+            // We need STA so we behave more like PS3
+            iss.ApartmentState = ApartmentState.STA;
 
-            Assembly mps = Assembly.GetExecutingAssembly(); // .GetEntryAssembly()
+            // We need ReuseThread so that we behave, well, the way that PowerShell.exe and ISE do.
+            iss.ThreadOptions = PSThreadOptions.ReuseThread;
+
+            // We moved ModularInputsModule.dll into a subdirectory
+            // So we need to use GetEntryAssembly to use the path of PowerShell.exe
+            Assembly mps = Assembly.GetEntryAssembly(); // .GetExecutingAssembly();
             string path = Path.GetDirectoryName(mps.Location);
-            if (!string.IsNullOrWhiteSpace(path))
+            if (!string.IsNullOrEmpty(path))
             {
-                iss.ImportPSModulesFromPath(Path.Combine(path, "Modules"));
+                // because this must work with PowerShell2, we can't use ImportPSModulesFromPath
+                path = Path.Combine(path, "Modules");
+                if (!Directory.Exists(path))
+                {
+                    var logger = new ConsoleLogger();
+                    logger.WriteLog(LogLevel.Warn, "The Modules Path '{0}' could not be found", path);
+                }
+                else
+                {
+                    iss.ImportPSModule(Directory.GetDirectories(path));
+                }
             }
             return iss.LoadCmdlets(mps);
         }
@@ -111,7 +131,11 @@ namespace Splunk.ModularInputs
                     // ReSharper restore EmptyGeneralCatchClause
                 }
             }
-            Logger = new ConsoleLogger();
+
+            if (Logger == null)
+            {
+                Logger = new ConsoleLogger();
+            }
         }
 
         /// <summary>
@@ -148,7 +172,7 @@ namespace Splunk.ModularInputs
                 }
 
                 // Logging FYI:
-                this.Logger.WriteLog(LogLevel.Info, string.Format("--- Stanza: {0} ---", name));
+                this.Logger.WriteLog(LogLevel.Debug, string.Format("Execute Stanza: {0}", name));
 
                 // Environment.SetEnvironmentVariable("SPLUNKPS_INPUT_NAME", name);
 
@@ -178,23 +202,36 @@ namespace Splunk.ModularInputs
         /// <exception cref="Quartz.JobExecutionException">Failed to execute PowerShell Script</exception>
         public void Execute(InitialSessionState iss, string command, string stanzaName)
         {
+            Runspace runspace = null;
             try
             {
                 // We may want to use a runspace pool? ps.RunspacePool = rsp;
-                var ps = PowerShell.Create(iss);
+                runspace = RunspaceFactory.CreateRunspace(iss);
+                runspace.Open();
+                var pipeline = runspace.CreatePipeline();
+                pipeline.Commands.AddScript(command);
 
-                ps = ps.AddScript(command);
+
+                //// ToDo: a light-weight host API?
+                //var runSpace = RunspaceFactory.CreateRunspace(iss);
+                //Runspace.DefaultRunspace = runSpace;
+                //runSpace.Open();
+                //var ps = runSpace.CreatePipeline(command, false);
+                //ps.Commands.Add(this.defaultOutputCommand);
+
+                // ps = ps.AddScript(command);
 
                 // Write the command output to the configured logger
-                this.Logger.WriteOutput(ps.Invoke(), stanzaName);
+                this.Logger.WriteOutput(pipeline.Invoke(), stanzaName);
 
                 // Write out any errors from invoking the script
-                if (!ps.HadErrors)
+
+                if (pipeline.Error.Count == 0)
                 {
                     return;
                 }
 
-                foreach (var error in ps.Streams.Error)
+                foreach (ErrorRecord error in pipeline.Error.ReadToEnd())
                 {
                     var details = error.ErrorDetails != null ? error.ErrorDetails.Message : error.Exception.Message;
 
@@ -210,12 +247,48 @@ namespace Splunk.ModularInputs
                         error.CategoryInfo.Reason,
                         details);
                 }
+                runspace.Close();
             }
             catch (Exception ex)
             {
                 this.Logger.WriteLog(LogLevel.Error, "PowerShell Exception:\r\n" + ex.Message);
                 throw new JobExecutionException("Failed to execute PowerShell Script", ex);
             }
+            finally
+            {
+                if (runspace != null)
+                {
+                    runspace.Dispose();
+                }
+            }
         }
+    }
+
+    public class Tuple<T1, T2, T3>
+    {
+        public Tuple(T1 item1, T2 item2, T3 item3)
+        {
+            this.Item1 = item1;
+            this.Item2 = item2;
+            this.Item3 = item3;
+        }
+
+        /// <summary>
+        /// Gets or sets the item1.
+        /// </summary>
+        /// <value>The item1.</value>
+        public T1 Item1 { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the item2.
+        /// </summary>
+        /// <value>The item2.</value>
+        public T2 Item2 { get; set; }
+
+        /// <summary>
+        /// Gets or sets the item3.
+        /// </summary>
+        /// <value>The item3.</value>
+        public T3 Item3 { get; set; }
     }
 }

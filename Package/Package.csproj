@@ -1,26 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" InitialTargets="_CheckForSolutionDir" DefaultTargets="Package" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <!-- default settings -->
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>1.0</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{2146681F-33E5-4078-9F6D-AC880E7AC699}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Splunk</RootNamespace>
-    <AssemblyName>SA-ModularInput-PowerShell</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <!-- <SolutionDir Condition="'$(SolutionDir)' == ''">..\</SolutionDir> -->
+    <SolutionDir Condition="'$(SolutionDir)' != '' and '$(SolutionDir)' != '*Undefined*' and !HasTrailingSlash('$(SolutionDir)')">$(SolutionDir)\</SolutionDir>
+    <ProductVersion>1.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E090899B-44A0-4496-A3B0-62A72BFF9E73}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Splunk</RootNamespace>
+    <AssemblyName>SA-ModularInput-PowerShell</AssemblyName>
+    <OutputPath>$(SolutionDir)Output\$(Configuration)\$(AssemblyName)</OutputPath>
+    <ProjectReferenceBuildTargets>Rebuild</ProjectReferenceBuildTargets>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>$(SolutionDir)Output\Debug\$(AssemblyName)</OutputPath>
     <OutputBinPath>windows_x86_64\bin\</OutputBinPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
@@ -29,7 +30,6 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <OutputPath>$(SolutionDir)Output\Release\$(AssemblyName)</OutputPath>
     <OutputBinPath>windows_x86_64\bin\</OutputBinPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
@@ -40,7 +40,6 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>$(SolutionDir)Output\Debug\$(AssemblyName)</OutputPath>
     <OutputBinPath>windows_x86\bin\</OutputBinPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
@@ -49,7 +48,6 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
-    <OutputPath>$(SolutionDir)Output\Release\$(AssemblyName)</OutputPath>
     <OutputBinPath>windows_x86\bin\</OutputBinPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
@@ -89,21 +87,13 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="appserver\static\appIcon.xcf" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ModularPowerShell\ModularPowerShell.csproj">
-      <!-- note this special output location -->
-      <DestinationSubDirectory>$(OutputBinPath)</DestinationSubDirectory>
-      <Project>{582fd7ff-27bc-4754-8360-92ad1f6604bf}</Project>
-      <Name>ModularPowerShell</Name>
-      <Private>True</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="default\props.conf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="README\inputs.conf.spec">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="windows_x86_64\bin\Modules\LocalStorage\LocalStorage.psm1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -114,48 +104,66 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="windows_x86_64\bin\Modules\LocalStorage\LocalStorage.psm1">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <ProjectReference Include="..\ModularPowerShell\ModularPowerShell.PS3.csproj">
+      <!-- note this special output location -->
+      <DestinationSubDirectory>$(OutputBinPath)</DestinationSubDirectory>
+      <Project>{1e3c0fdd-ffe4-41e1-bf0b-404475f92d1a}</Project>
+      <Name>ModularPowerShell.PS3</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ModularPowerShell\ModularPowerShell.PS2.csproj">
+      <!-- note this special output location -->
+      <DestinationSubDirectory>$(OutputBinPath)</DestinationSubDirectory>
+      <Project>{1E3C0FDD-FFE4-41E1-BF0B-404475F92D1A}</Project>
+      <Name>ModularPowerShell.PS3</Name>
+    </ProjectReference>
   </ItemGroup>
-  <!-- App is a package for creating the Splunk app structure in visual studio.
+  <!-- This app is a package for creating the Splunk app structure in visual studio.
        If we wanted to turn this into a re-usable recipe for creating splunk apps
-       we could remove the stuff from here down and stick it in a splunk.targets file.
+       we could move the stuff from here down and stick it in a splunk.targets file.
   -->
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
-  <!-- For now  "App" is a C# application, since that was the simplest way to get it to show up nicely
-       *** But that means that building produces output. ***
 
-       To fix that, we override the BuildDependsOn step, and prevent calling CopyFilesToOutputDirectory
-       That way, although we produce a .dll, it's never copied to the output folder.
-       Then we add these two steps (which were part of CopyFilesToOutputDirectory):
-        _CopyFilesMarkedCopyLocal - Copy the output from referenced projects 
-        _CopySourceItemsToOutputDirectory - Copy the "Content" items from this project
-  -->
   <PropertyGroup>
-    <!-- this is a minimal build which doesn't copy the compiled output of "App" (See Above) -->
-    <BuildDependsOn>BeforeBuild;BuildOnlySettings;ResolveReferences;ResolveKeySource;
-      AssignTargetPaths;_CopyFilesMarkedCopyLocal;_CopySourceItemsToOutputDirectory;
-      AfterBuild;
-    </BuildDependsOn>
-  </PropertyGroup>
-  <!-- We need to package our binaries up, so we have some extra steps here -->
-  <!-- These depend on files that are in a solution-level folder .7zip (like .nuget) -->
-  <PropertyGroup>
-    <SevenZipPath>$(SolutionDir).nuget\7za.exe</SevenZipPath>
-    <PublishPath Condition="$(PublishPath) == ''">$(OutputPath)..\$(AssemblyName).tar.gz</PublishPath>
-    <Files Condition="$(Files) == ''">$(OutputPath)\..\*</Files>
+    <!-- these are the steps that ensure references are compiled, and let us figure out where to copy things from -->
+    <CopyBitsDependsOn>
+      ResolveReferences;
+      _CopyFilesMarkedCopyLocal;
+      _CopySourceItemsToOutputDirectory;
+    </CopyBitsDependsOn>
     <!-- See http://msdn.microsoft.com/en-us/magazine/dd419659.aspx#id0090093 -->
-    <CleanDependsOn>CleanPublish;$(CleanDependsOn);</CleanDependsOn>
-    <PublishDependsOn>Build;</PublishDependsOn>
+    <CleanDependsOn>CleanPackage;$(CleanDependsOn);</CleanDependsOn>
+    <PackagePath Condition="$(PackagePath) == ''">$(OutputPath)..\$(AssemblyName).tar.gz</PackagePath>
   </PropertyGroup>
-  <Target Name="CleanPublish" BeforeTargets="Publish">
-    <Delete Files="$(PublishPath)" />
+  <Target Name="_CheckForSolutionDir">
+    <Error Condition="'' == '$(SolutionDir)' or '$(SolutionDir)' == '*Undefined*'" Text="SolutionDir is *Undefined*. Please provide the root solution dir (e.g.: /p:SolutionDir=..\)" />
+    <Error Condition="!HasTrailingSlash('$(SolutionDir)')" Text="SolutionDir is missing trailing slash: '$(SolutionDir)'" />
   </Target>
-  <Target Name="Publish" DependsOnTargets="$(PublishDependsOn)" Inputs="$(OutputPath)" Outputs="$(PublishPath)">
+  <Target Name="CleanPackage" BeforeTargets="Package">
+    <Delete Files="$(PackagePath)" />
+  </Target>
+  
+  <Target Name="CopyBits" DependsOnTargets="$(CopyBitsDependsOn)" BeforeTargets="Package">
+    <!-- <Message Text="1. ReferencePath:%0D%0A%09@(ReferencePath->'$(OutDir)%(DestinationSubDirectory)%(Filename)%(Extension)', '%0D%0A%09')" /> -->
+    <Message Text="Copy Reference Output Folders:%0D%0A%09@(ReferenceCopyLocalPaths->'%(RootDir)%(Directory)', '%0D%0A%09')" />
+    <PropertyGroup>
+      <ReferencePaths>@(ReferenceCopyLocalPaths->'%(RelativeDir)**\*',';')</ReferencePaths>
+    </PropertyGroup>
+    <ItemGroup>
+      <DependencyFiles Include="$(ReferencePaths)" Exclude="*.pdb" />
+    </ItemGroup>
+    <Copy OverwriteReadOnlyFiles="True" SkipUnchangedFiles="True" SourceFiles="@(DependencyFiles)" DestinationFiles="$(OutputPath)$(OutputBinPath)%(RecursiveDir)%(Filename)%(Extension)" />
+  </Target>
+  
+  <Target Name="Package" DependsOnTargets="CopyBits" Inputs="$(OutputPath)" Outputs="$(PackagePath)">
+    <PropertyGroup>
+      <!-- We need to package our binaries up, so we have some extra steps here -->
+      <!-- These depend on files that are in a solution-level folder .7zip (like .nuget) -->
+      <SevenZipPath>$(SolutionDir).nuget\7za.exe</SevenZipPath>
+      <Files Condition="$(Files) == ''">$(OutputPath)..\*</Files>
+    </PropertyGroup>
+    <Message Importance="High" Text="Itermediate: @(IntermediateAssembly)" />
     <Message Importance="Low" Text="7Zip executable: $(SevenZipPath)" />
-    <Error Condition="'$(SevenZipPath)' == '' Or !Exists($(SevenZipPath))" Text="7za.exe is not available." />
-    <Exec WorkingDirectory="$(OutputPath)" Outputs="$(PublishPath)" Command="&quot;$(SevenZipPath)&quot; a -ttar -so  -x!*.vshost.exe -x!*.7z  -x!*.pdb -x!*.gz -x!*.zip stdout &quot;$(Files)&quot; | &quot;$(SevenZipPath)&quot; a -si -tgzip -mx9 &quot;$(PublishPath)&quot;" />
+    <Error Condition="'$(SevenZipPath)' == '' Or !Exists($(SevenZipPath))" Text="7za.exe is not available in: $(SevenZipPath)" />
+    <Exec WorkingDirectory="$(OutputPath)" Outputs="$(PackagePath)" Command="&quot;$(SevenZipPath)&quot; a -ttar -so  -x!*.vshost.exe -x!*.7z  -x!*.pdb -x!*.gz -x!*.zip stdout &quot;$(Files)&quot; | &quot;$(SevenZipPath)&quot; a -si -tgzip -mx9 &quot;$(PackagePath)&quot;" />
   </Target>
-  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
 </Project>

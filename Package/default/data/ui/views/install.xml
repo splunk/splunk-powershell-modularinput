@@ -138,10 +138,10 @@ specifying a script in inputs.conf and within your script:</p>
 <p>There are a few special property names which have significance for the event and allow you to override the defaults defined in the inputs.conf stanza:</p>
 <ul>
 <li><b>SplunkIndex</b> - Overrides the index that the output will be stored in</li>
-<li><b>SplunkSourc</b>  - Overrides the "source" for the ouput</li>
-<li><b>SplunkHos</b>  - Overrides the "host" name for the output</li>
-<li><b>SplunkSourceTyp</b>  - Overrides the "sourcetype" for the output</li>
-<li><b>SplunkTim</b>  - Overrides the "time" -- if you don't specify this, all objects output by your script in a single execution will get roughly the same timestamp, because they're held for output until the script execution is finished, and then marked with the output time.</li>
+<li><b>SplunkSource</b>  - Overrides the "source" for the ouput</li>
+<li><b>SplunkHost</b>  - Overrides the "host" name for the output</li>
+<li><b>SplunkSourceType</b>  - Overrides the "sourcetype" for the output</li>
+<li><b>SplunkTime</b>  - Overrides the "time" -- if you don't specify this, all objects output by your script in a single execution will get roughly the same timestamp, because they're held for output until the script execution is finished, and then marked with the output time.</li>
 </ul>
 
 <p>These properties will never show up in the key="value" output.</p>

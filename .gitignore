@@ -162,3 +162,7 @@ pip-log.txt
 
 # Mac crap
 .DS_Store
+*.ncrunchproject
+HostingPerfTest/
+HostingPerfTest.PS2/
+*.DotSettings

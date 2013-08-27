@@ -14,6 +14,9 @@
 namespace Splunk.ModularInputs.Serialization
 {
     using System.Collections.Generic;
+    using System.Management.Automation;
+
+    using Common.Logging;
 
     using Common.Logging;
 
@@ -37,7 +40,7 @@ namespace Splunk.ModularInputs.Serialization
         /// </summary>
         /// <param name="outputCollection">The PowerShell output</param>
         /// <param name="stanza">The input stanza</param>
-        public void WriteOutput(IEnumerable<object> outputCollection, string stanza)
+        public void WriteOutput(IEnumerable<PSObject> outputCollection, string stanza)
         {
         }
 
@@ -46,7 +49,7 @@ namespace Splunk.ModularInputs.Serialization
         /// </summary>
         /// <param name="output">A single output</param>
         /// <param name="stanza">The input stanza</param>
-        public void WriteOutput(dynamic output, string stanza)
+        public void WriteOutput(PSObject output, string stanza)
         {
         }
     }

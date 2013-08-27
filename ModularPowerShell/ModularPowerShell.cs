@@ -16,6 +16,7 @@ namespace Splunk.ModularInputs
 {
     using System;
     using System.Collections.Generic;
+    using System.Text.RegularExpressions;
     using System.Xml.Linq;
 
     using Common.Logging;
@@ -27,6 +28,8 @@ namespace Splunk.ModularInputs
 
     public class ModularPowerShell
     {
+        private static readonly Regex StanzaSplitter = new Regex("://", RegexOptions.Compiled);
+
         public ModularPowerShell(XElement input, ILogger logger)
         {
             this.Logger = logger;
@@ -36,9 +39,10 @@ namespace Splunk.ModularInputs
 
             this.Jobs = this.ParseJobs(input);
 
+            Logger.WriteLog(LogLevel.Info, "Modular PowerShell Initialized Successfully: {0} Jobs Loaded", this.Jobs.Count);
+
             // TODO: Finalize output
             // Console.Out.WriteLine("</stream>");
-            this.Logger.WriteLog(LogLevel.Info, "Finished InputDefinition");            
         }
 
         /// <summary>
@@ -61,7 +65,10 @@ namespace Splunk.ModularInputs
             {
                 var scheduler = StdSchedulerFactory.GetDefaultScheduler();
                 scheduler.Start();
+
+                Logger.WriteLog(LogLevel.Debug, "Scheduler Started. Scheduling {0} Jobs", this.Jobs.Count);
                 scheduler.ScheduleJobs(this.Jobs, true);
+                Logger.WriteLog(LogLevel.Debug, "Scheduled {0} Jobs Successfully", this.Jobs.Count);
             }
             catch (Exception ex)
             {
@@ -92,17 +99,23 @@ namespace Splunk.ModularInputs
             {
                 try
                 {
+                    var nameAttribute = stanza.Attribute("name");
+                    if (nameAttribute == null)
+                    {
+                        throw new ArgumentOutOfRangeException("The input stanza has no name.");
+                    }
+
                     // get the hostname part of the powershell://stanza
-                    var name = stanza.Attribute("name").Value;
-                    var uri = new Uri(name);
-                    name = uri.Host;
+                    var name = nameAttribute.Value;
+                    // parse by hand, because splunk has no problem with "powershell2://stanza with spaces"
+                    name = StanzaSplitter.Split(name,2)[1];
 
                     var job = JobBuilder.Create<PowerShellJob>()
                                         .UsingJobData("script", stanza.GetParameterValue("script"))
                                         .UsingJobData("ILogger", typeof(ConsoleLogger).AssemblyQualifiedName)
                                         .UsingJobData("PSModulePath", psModulePath)
                                         .UsingJobData("SplunkStanzaName", name)
-                                        .WithIdentity(stanza.Attribute("name").Value);
+                                        .WithIdentity(nameAttribute.Value);
 
                     var trigger = TriggerBuilder.Create()
                                                 .WithSchedule(CronScheduleBuilder.CronSchedule(stanza.GetParameterValue("schedule")))
@@ -112,8 +125,7 @@ namespace Splunk.ModularInputs
                 }
                 catch (Exception ex)
                 {
-                    Logger.WriteLog(
-                        LogLevel.Fatal, "Failed to parse stanza {0}\n{1}", stanza.Attribute("name").Value, ex.Message);
+                    Logger.WriteLog(LogLevel.Fatal, "Failed to parse stanza {0}\n{1}", stanza.Attribute("name"), ex.Message);
 
                     if (ex.InnerException != null)
                     {

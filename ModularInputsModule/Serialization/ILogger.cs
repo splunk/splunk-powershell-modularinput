@@ -15,6 +15,7 @@ namespace Splunk.ModularInputs.Serialization
 {
     using System.Collections.Generic;
     using System.Management.Automation;
+    using System.Text.RegularExpressions;
 
     using Common.Logging;
 
@@ -36,14 +37,14 @@ namespace Splunk.ModularInputs.Serialization
         /// </summary>
         /// <param name="outputCollection">The PowerShell output</param>
         /// <param name="stanza">The input stanza</param>
-        void WriteOutput(IEnumerable<dynamic> outputCollection, string stanza);
+        void WriteOutput(IEnumerable<PSObject> outputCollection, string stanza);
 
         /// <summary>
         /// Writes out a message for a single object, annotating it with the source stanza
         /// </summary>
         /// <param name="output">A single output</param>
         /// <param name="stanza">The input stanza</param>
-        void WriteOutput(dynamic output, string stanza);
+        void WriteOutput(PSObject output, string stanza);
     }
 
 
@@ -52,12 +53,15 @@ namespace Splunk.ModularInputs.Serialization
     /// </summary>
     public abstract class BaseLogger : ILogger
     {
+
+        internal readonly Regex Trim = new Regex("\\s*[\\r\\n]+", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+
         /// <summary>
         /// Writes out splunk xml events for the specified stanza
         /// </summary>
         /// <param name="outputCollection">The PowerShell output</param>
         /// <param name="stanza">The input stanza</param>
-        public virtual void WriteOutput(IEnumerable<dynamic> outputCollection, string stanza)
+        public virtual void WriteOutput(IEnumerable<PSObject> outputCollection, string stanza)
         {
             foreach (var output in outputCollection)
             {
@@ -66,7 +70,7 @@ namespace Splunk.ModularInputs.Serialization
                     var psOutput = output as PSObject;
                     if (psOutput != null && psOutput.BaseObject != null)
                     {
-                        this.WriteOutput(output, stanza);
+                        this.WriteOutput(psOutput, stanza);
                     }
                 }
             }
@@ -77,7 +81,7 @@ namespace Splunk.ModularInputs.Serialization
         /// </summary>
         /// <param name="output">A single output</param>
         /// <param name="stanza">The input stanza</param>
-        public abstract void WriteOutput(dynamic output, string stanza);
+        public abstract void WriteOutput(PSObject output, string stanza);
 
         /// <summary>
         /// Writes out the specified message at the specified log level

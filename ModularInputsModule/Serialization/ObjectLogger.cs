@@ -15,6 +15,8 @@
 namespace Splunk.ModularInputs.Serialization
 {
     using System.Collections.Generic;
+    using System.Globalization;
+    using System.Management.Automation;
     using System.Text;
 
     using Common.Logging;
@@ -23,17 +25,17 @@ namespace Splunk.ModularInputs.Serialization
     {
         private readonly StringBuilder log = new StringBuilder();
 
-        private readonly Dictionary<string, List<dynamic>> output = new Dictionary<string, List<dynamic>>();
+        private readonly Dictionary<string, List<PSObject>> outputCache = new Dictionary<string, List<PSObject>>();
 
         /// <summary>
         /// Gets the output buffers.
         /// </summary>
         /// <value>The output.</value>
-        public Dictionary<string, List<dynamic>> Output
+        public Dictionary<string, List<PSObject>> Output
         {
             get
             {
-                return this.output;
+                return this.outputCache;
             }
         }
 
@@ -54,8 +56,8 @@ namespace Splunk.ModularInputs.Serialization
         /// </summary>
         public void Clear()
         {
-            this.output.Clear();
-            this.log.Clear();
+            this.outputCache.Clear();
+            this.log.Remove(0,this.log.Length);
         }
 
         /// <summary>
@@ -67,22 +69,22 @@ namespace Splunk.ModularInputs.Serialization
         public override void WriteLog(LogLevel level, string format, params object[] args)
         {
             this.log.AppendFormat("{0}: ", level);
-            this.log.AppendFormat(format, args);
+            this.log.Append(base.Trim.Replace(string.Format(CultureInfo.InvariantCulture, format, args), " "));
             this.log.AppendLine();
         }
 
         /// <summary>
         /// Stores the objects in the output by stanza
         /// </summary>
-        /// <param name="outputCollection">The PowerShell output</param>
+        /// <param name="output">The PowerShell output</param>
         /// <param name="stanza">The input stanza</param>
-        public override void WriteOutput(dynamic outputCollection, string stanza)
+        public override void WriteOutput(PSObject output, string stanza)
         {
-            if (!this.output.ContainsKey(stanza))
+            if (!this.outputCache.ContainsKey(stanza))
             {
-                this.output.Add(stanza, new List<dynamic>());
+                this.outputCache.Add(stanza, new List<PSObject>());
             }
-            this.output[stanza].Add(outputCollection);
+            this.outputCache[stanza].Add(output);
         }
     }
 }
