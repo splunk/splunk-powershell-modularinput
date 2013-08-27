@@ -69,52 +69,44 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Common.Logging.2.1.2\lib\net40\Common.Logging.dll</HintPath>
     </Reference>
-    <Reference Include="Common.Logging.NLog20">
-      <HintPath>..\packages\Common.Logging.NLog20.2.1.2\lib\net40\Common.Logging.NLog20.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Practices.ServiceLocation">
-      <HintPath>..\packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll</HintPath>
     <Reference Include="Common.Logging.NLog20, Version=2.1.2.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <DestinationSubDirectory>$(LibraryFolder)</DestinationSubDirectory>
       <Private>True</Private>
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Common.Logging.NLog20.2.1.2\lib\net40\Common.Logging.NLog20.dll</HintPath>
-      <DestinationSubDirectory>$(LibraryFolder)</DestinationSubDirectory>
     </Reference>
     <Reference Include="Microsoft.Practices.Unity, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <DestinationSubDirectory>$(LibraryFolder)</DestinationSubDirectory>
       <Private>True</Private>
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Unity.3.0.1304.0\lib\Net45\Microsoft.Practices.Unity.dll</HintPath>
-      <DestinationSubDirectory>$(LibraryFolder)</DestinationSubDirectory>
     </Reference>
     <Reference Include="Microsoft.Practices.Unity.Configuration, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <DestinationSubDirectory>$(LibraryFolder)</DestinationSubDirectory>
       <Private>True</Private>
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Unity.3.0.1304.0\lib\Net45\Microsoft.Practices.Unity.Configuration.dll</HintPath>
-      <DestinationSubDirectory>$(LibraryFolder)</DestinationSubDirectory>
     </Reference>
     <Reference Include="NLog, Version=2.0.1.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <DestinationSubDirectory>$(LibraryFolder)</DestinationSubDirectory>
       <Private>True</Private>
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NLog.2.0.1.2\lib\net45\NLog.dll</HintPath>
-      <DestinationSubDirectory>$(LibraryFolder)</DestinationSubDirectory>
-    </Reference>
-    <Reference Include="NLog">
       <HintPath>..\packages\NLog.2.0.1.2\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="Quartz, Version=2.1.2.400, Culture=neutral, PublicKeyToken=f6b8c98a402cc8a4, processorArchitecture=MSIL">
+      <DestinationSubDirectory>$(LibraryFolder)</DestinationSubDirectory>
       <Private>True</Private>
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Quartz.2.1.2\lib\net35\Quartz.dll</HintPath>
-      <DestinationSubDirectory>$(LibraryFolder)</DestinationSubDirectory>
-    </Reference>
-    <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\PowerShellReferences\net45\System.Management.Automation.dll</HintPath>
-      <DestinationSubDirectory>$(LibraryFolder)</DestinationSubDirectory>
+      <HintPath>..\packages\Quartz.2.1.2\lib\net40\Quartz.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <DestinationSubDirectory>$(LibraryFolder)</DestinationSubDirectory>
+      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\PowerShellReferences\net45\System.Management.Automation.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml" />
   </ItemGroup>
