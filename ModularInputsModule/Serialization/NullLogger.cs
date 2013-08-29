@@ -18,8 +18,6 @@ namespace Splunk.ModularInputs.Serialization
 
     using Common.Logging;
 
-    using Common.Logging;
-
     /// <summary>
     /// Class NullLogger - A Logger that doesn't do anything
     /// </summary>
