@@ -7,15 +7,15 @@
        the real path is in C:\Program Files(x86) and requires elevation -->
   <checkpoint_dir>C:\ProgramData\Splunk\modinputs\powershell</checkpoint_dir>
   <configuration>
-    <stanza name="powershell://Testing1">
+    <stanza name="powershell://Testing1Minute">
       <param name="host">retina</param>
       <param name="index">main</param>
       <param name="source">powershell</param>
       <param name="sourcetype">powershell_testing</param>
       <param name="script">Get-Module | Select-Object ModuleType, Name, Path, ExportedCommands</param>
-      <param name="schedule">0 * * ? * *</param>
+      <param name="schedule">45 * * ? * *</param>
     </stanza>
-    <stanza name="powershell://Count">
+    <stanza name="powershell://FifteenSecondCount">
       <param name="host">retina</param>
       <param name="index">main</param>
       <param name="source">powershell</param>
@@ -27,7 +27,7 @@
         New-Object PSObject -Prop @{ Name = "Testing"; Count = $Count; Storage = $Path }
         Export-LocalStorage Count $Count
       </param>
-      <param name="schedule">1/15 * * ? * *</param>
+      <param name="schedule">0/15 * * ? * *</param>
     </stanza>
     <stanza name="powershell://EveryFiveMinutes">
       <param name="host">retina</param>
@@ -37,7 +37,17 @@
       <param name="script">
         Get-ChildItem Env:\SPLUNK* | ConvertTo-KeyValueString Name, Value
       </param>
-      <param name="schedule">* 0/5 * ? * *</param>
+      <param name="schedule">30 0/5 * ? * *</param>
+    </stanza>
+    <stanza name="powershell://FifteenMinuteService">
+      <param name="host">retina</param>
+      <param name="index">main</param>
+      <param name="source">powershell</param>
+      <param name="sourcetype">powershell_testing</param>
+      <param name="script">
+        Get-Service | Select Name, DisplayName, Status, CanPauseAndContinue, CanShutdown, CanStop, ServiceType
+      </param>
+      <param name="schedule">5 0/15 * ? * *</param>
     </stanza>
   </configuration>
 </input>

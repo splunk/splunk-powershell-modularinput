@@ -131,12 +131,27 @@ namespace Splunk.ModularInputs.Serialization
             if (properties == null)
             {
                 return output.Where(p => p.MemberType != PSMemberTypes.ScriptProperty && p.IsGettable)
-                    .Select( p=> new KeyValuePair<string, object>(p.Name, p.Value));
+                    .Select(ConvertToKeyValuePair);
             }
 
             return output.Where( p => properties.Contains(p.Name, StringComparer.InvariantCultureIgnoreCase)
                                    && p.MemberType != PSMemberTypes.ScriptProperty && p.IsGettable)
-                         .Select(p => new KeyValuePair<string, object>(p.Name, p.Value));
+                         .Select(ConvertToKeyValuePair);
+        }
+
+        private static KeyValuePair<string, object> ConvertToKeyValuePair(PSPropertyInfo property)
+        {
+            string key = null;
+            object value = null;
+            try
+            {
+                key = property.Name;
+                value = property.Value;
+            } catch { } // hide or ignore errors reading values... because PowerShell does. Weird?
+
+            return string.IsNullOrEmpty(key)
+                 ? new KeyValuePair<string, object>()
+                 : new KeyValuePair<string, object>(key, value ?? string.Empty);
         }
 
         /// <summary>
@@ -147,14 +162,9 @@ namespace Splunk.ModularInputs.Serialization
         /// <returns>An enumerable collection of dynamic objects with Name and Value properties</returns>
         private static IEnumerable<KeyValuePair<string, object>> FilterKeyValuePairs(IEnumerable<KeyValuePair<string, object>> output, IEnumerable<string> keys)
         {
-            if (keys == null)
-            {
-                return output.Select(kv => new KeyValuePair<string, object>(kv.Key, kv.Value));
-            }
-            else
-            {
-                return output.Where(kv => keys.Contains(kv.Key)).Select(kv => new KeyValuePair<string, object>(kv.Key, kv.Value));
-            }
+            return keys == null
+                ? output.Select(kv => new KeyValuePair<string, object>(kv.Key, kv.Value)) 
+                : output.Where(kv => keys.Contains(kv.Key)).Select(kv => new KeyValuePair<string, object>(kv.Key, kv.Value));
         }
 
         /// <summary>
@@ -197,67 +207,74 @@ namespace Splunk.ModularInputs.Serialization
             // We always process the properties, because in PowerShell Strings can have ETS properties
             // Specifically, we might be adding Splunk* data
             // TODO: if we're in use as a cmdlet, we have a runspace, and can process Script Properties            
-            foreach (var property in objects)
-            {
-                string value = string.Empty;
+            var enumerator = objects.GetEnumerator();
 
-                string name = property.Key;
-
-                try
+            
+                foreach (var property in objects)
                 {
-                    if (property.Value != null)
+                    // If we can't access the name, just give up right away
+                    if (!string.IsNullOrEmpty(property.Key))
                     {
-                        // The "O" or "o" standard format specifier represents a custom date and time format string using a pattern that preserves time zone information.
-                        if (property.Value is DateTime)
-                        {
-                            value = ((DateTime)property.Value).ToString("o");
-                        }
-                        else if (property.Value is DateTimeOffset)
-                        {
-                            value = ((DateTimeOffset)property.Value).ToString("o");
-                        }
-                        else
-                        {
-                            value = string.Format(CultureInfo.InvariantCulture, "{0}", property.Value);
-                        }
-                    }
-                }
-                catch
-                {
-                    value = string.Empty;
-                }
+                        string value = string.Empty;
 
-                // Handle special property names
-                if (ReservedProperties.Contains(name))
-                {
-                    name = name.Remove(0, 6).ToLowerInvariant();
-                    if (name.Equals("time"))
-                    {
-                        DateTimeOffset time;
+                        string name = property.Key;
+
                         try
                         {
-                            time = (DateTimeOffset)property.Value;
+                            if (property.Value != null)
+                            {
+                                // The "O" or "o" standard format specifier represents a custom date and time format string using a pattern that preserves time zone information.
+                                if (property.Value is DateTime)
+                                {
+                                    value = ((DateTime)property.Value).ToString("o");
+                                }
+                                else if (property.Value is DateTimeOffset)
+                                {
+                                    value = ((DateTimeOffset)property.Value).ToString("o");
+                                }
+                                else
+                                {
+                                    value = string.Format(CultureInfo.InvariantCulture, "{0}", property.Value);
+                                }
+                            }
                         }
                         catch
                         {
-                            if (!DateTimeOffset.TryParse(value, out time))
-                            {
-                                time = DateTimeOffset.UtcNow;
-                            }
+                            value = string.Empty;
                         }
 
-                        // convert the time to unix epoch time
-                        value = (time - Epoch).TotalSeconds.ToString(CultureInfo.InvariantCulture);
-                        hasTime = true;
-                    }
+                        // Handle special property names
+                        if (ReservedProperties.Contains(name))
+                        {
+                            name = name.Remove(0, 6).ToLowerInvariant();
+                            if (name.Equals("time"))
+                            {
+                                DateTimeOffset time;
+                                try
+                                {
+                                    time = (DateTimeOffset)property.Value;
+                                }
+                                catch
+                                {
+                                    if (!DateTimeOffset.TryParse(value, out time))
+                                    {
+                                        time = DateTimeOffset.UtcNow;
+                                    }
+                                }
 
-                    meta.Insert(0, string.Format("<{0}>{1}</{0}>\n", name, value));
+                                // convert the time to unix epoch time
+                                value = (time - Epoch).TotalSeconds.ToString(CultureInfo.InvariantCulture);
+                                hasTime = true;
+                            }
+
+                            meta.Insert(0, string.Format("<{0}>{1}</{0}>\n", name, value));
+                        }
+                        else
+                        {
+                            data.AppendFormat("{0}=\"{1}\"\n", name, value);
+                        }
+                    }
                 }
-                else
-                {
-                    data.AppendFormat("{0}=\"{1}\"\n", name, value);
-                }
-            }
 
             // make sure we *always* define the time
             if (!hasTime)
