@@ -167,7 +167,7 @@ namespace Splunk.ModularInputs
 
                 if (command == null)
                 {
-                    this.Logger.WriteLog(LogLevel.Error, "Missing 'script' parameter.");
+                    this.Logger.WriteLog(LogLevel.Error, "Missing 'script' parameter in Stanza {0}", name);
                     return;
                 }
 
@@ -186,8 +186,8 @@ namespace Splunk.ModularInputs
             }
             catch (Exception ex)
             {
-                this.Logger.WriteLog(LogLevel.Error, "PowerShell Exception:\r\n" + ex.Message);
-                throw new JobExecutionException("Failed to execute PowerShell Script", ex);
+                this.Logger.WriteLog(LogLevel.Error, "PowerShell Exception in Stanza {0}:\r\n{1}", name, ex.Message);
+                throw new JobExecutionException("Failed to execute PowerShell Script for Stanza " + name, ex);
             }
 
             this.Execute(iss, command, name);
@@ -251,8 +251,8 @@ namespace Splunk.ModularInputs
             }
             catch (Exception ex)
             {
-                this.Logger.WriteLog(LogLevel.Error, "PowerShell Exception:\r\n" + ex.Message);
-                throw new JobExecutionException("Failed to execute PowerShell Script", ex);
+                this.Logger.WriteLog(LogLevel.Error, "PowerShell Exception in Stanza {0}:\r\n{1}", stanzaName, ex.Message);
+                throw new JobExecutionException("Failed to execute PowerShell Script for Stanza " + stanzaName, ex);
             }
             finally
             {
