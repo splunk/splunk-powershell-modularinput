@@ -102,7 +102,11 @@ function Import-LocalStorage {
 	#.Synopsis
 	#   Loads an object with the specified name from local storage 
 	#.Description
-	#   Retrieves objects from disk using Get-LocalStoragePath and Import-CliXml
+	#   Retrieves objects from disk using Get-LocalStoragePath and Import-
+    #   
+    #   PLEASE NOTE: this will throw an exception if you call it without a DefaultValue 
+    #   before you've exported values. If the data you're trying to import may not exist yet, 
+    #   then you MUST provide the DefaultValue parameter or handle the exception.
 	param(
 		# A unique valid file name to use when persisting the object to disk
 		[Parameter(Mandatory=$true, Position=0)]
